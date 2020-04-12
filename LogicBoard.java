@@ -38,6 +38,8 @@ class LBoard
 	private boolean whitePawns[];
 	private boolean blackPawns[];
 
+	private int count;		//move counter
+
 	public LBoard()
 	{
 
@@ -182,92 +184,51 @@ class LBoard
 
 	}
 
+
 	public boolean CheckMate(int Player)
 	{
-		//need to check: (-1,-1)(-1,0)(-1,+1)(0,+1)(+1,+1)(+1,0)(+1,-1)(0,-1)
-		//if king pos is still in check after these moves, then checkmate
-		//if moveKing() returns true, then the moved location is valid and player is not in CheckMate
-		int x = 0;
-		int y = 0;
-		Vector<Integer> Pos = pieceCor.get("wk0");
-		String king = "wk0";
-		if(Player == 0) //player is white
-	      {
-	        Pos = pieceCor.get("wk0");
-					x = Pos.get(0);
-					y = Pos.get(1);
 
-				}
-			else if(Player == 1)
-			{
-				  Pos = pieceCor.get("bk0");
-					x = Pos.get(0);
-					y = Pos.get(1);
-					king = "bk0";
+		if(check(Player))
+		{
+		  int x = 0;
+		  int y = 0;
+		  Vector<Integer> Pos = pieceCor.get("wk0");
+		  String king = "wk0";
+		  if(Player == 0) //player is white
+		  {
+		        Pos = pieceCor.get("wk0");
+		        x = Pos.get(0);
+		        y = Pos.get(1);
+
+		  }
+		    else if(Player == 1)
+		    {
+		        Pos = pieceCor.get("bk0");
+		        x = Pos.get(0);
+		        y = Pos.get(1);
+		        king = "bk0";
+		    }
+		    Vector<Vector<Integer>> v = getKingTrajectory(king);
+		    Iterator <Vector<Integer>> itr =  v.iterator();
+
+		    while(itr.hasNext())
+		    {
+		      Vector<Integer> C = itr.next();
+		      String capturedPiece = Board[(int)C.get(0)][(int)C.get(1)];
+		      Board[(int)C.get(0)][(int)C.get(1)] = king;
+		      Board[x][y] = "";
+		      if(!check(Player))	//player is not in check
+		      {
+		        Board[x][y] = king;
+		        Board[(int)C.get(0)][(int)C.get(1)] = capturedPiece;
+		        return false;
+		      }
+		      Board[x][y] = king;
+		      Board[(int)C.get(0)][(int)C.get(1)] = capturedPiece;
+		    }
+		  	return true;
 			}
-					 // board[x-1][y-1] = "bk0";
-					 // board[x][y] = "";
-					//move and then check if position is in check
-					//0,5
-					if(isValid(x -1, y - 1))
-					{
-						Board[x-1][y-1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-	        else if(isValid(x - 1, y)) //-1,0
-	        {
-						Board[x-1][y] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-					else if(isValid(x - 1, y+1)) //-1,+1
-	        {
-						Board[x-1][y+1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}//0+1
-					else if(isValid(x, y+1)) //0,+1
-	        {
-						Board[x][y+1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}//+1+1
-					else if(isValid(x +1, y+1)) //+1,+1
-	        {
-						Board[x+1][y+1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}//+1,0
-					else if(isValid(x + 1, y)) //+1,0
-	        {
-						Board[x+1][y] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-					else if(isValid(x + 1, y-1)) //+1,-1
-	        {
-						Board[x+1][y-1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-					else if(isValid(x, y-1)) //0,-1
-	        {
-						Board[x][y-1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-
-	        //if all those moves dont work, then player is in check CheckMate
-	        return true;
+		return false;
 	}
 
 
@@ -324,11 +285,12 @@ class LBoard
 	{
 		Scanner input = new Scanner(System.in);
 
-		int count = 0;
+		count = 0;
 
-		while(!(CheckMate(0)||CheckMate(1)))
+		while(true)
 		{
-
+			// !(CheckMate(0) || CheckMate(1))
+			System.out.println(CheckMate(0));
 			if(count%2 == 0)
 				System.out.println("White to play");
 			else
@@ -374,7 +336,7 @@ class LBoard
 						c -= 1;
 					}
 					C += 1;
-				}while(!isValid(r, c)||Board[r][c].equals("") || (Board[r][c].charAt(0) - player) != 0 );
+				}while(!isValid(r, c)||Board[r][c].equals("") ||(!Board[r][c].equals("") && (Board[r][c].charAt(0) - player) != 0 ));
 				char piece = Board[r][c].charAt(1);
 
 				C = 0;
@@ -404,7 +366,7 @@ class LBoard
 						c_ -= 1;
 					}
 					C += 1;
-				}while(!isValid(r_, c_) ||!(Board[r_][c_].equals("")|| (Board[r_][c_].charAt(0) - player) != 0));
+				}while(!isValid(r_, c_) ||!(Board[r_][c_].equals("")||(!Board[r_][c_].equals("") && (Board[r_][c_].charAt(0) - player) != 0)));
 
 
 				switch(piece)
@@ -447,8 +409,8 @@ class LBoard
 					}
 				}
 			}
-
-			count ++;
+			//count ++;
+			count += 2;
 			Display();
 		}
 
@@ -532,30 +494,42 @@ class LBoard
 	public boolean moveBishop(int player, int cur_r, int cur_c, int to_r, int to_c)
 	{
 
-		int den = Math.abs(to_r - cur_r);
-		int num = Math.abs(to_c - cur_c);
+		Vector<Vector<Integer>> tragectory = getTrajectory(Board[cur_r][cur_c]);
 
-		if(den == 0)
-			return false;
+		Iterator<Vector<Integer>> itr = tragectory.iterator();
 
-			int slope = num/den;
+		while(itr.hasNext())
+		{
+				Vector<Integer> cor = itr.next();
+				if((int)cor.get(0) == to_r && (int)cor.get(1) == to_c)
+					return true;
+		}
+		return false;
 
-			if(slope == 1 || slope == -1)
-			{
-
-				char p  = 'b';
-				if(player == 0)
-					p = 'w';
-
-				// if the place that we move to has the piece of same color
-				// we don't move it
-				if((Board[to_r][to_c].charAt(0) - p) == 0)
-					return false;
-
-				return movePiece(player, cur_r, cur_c, to_r, to_c);
-
-			}
-			return false;
+		// int den = Math.abs(to_r - cur_r);
+		// int num = Math.abs(to_c - cur_c);
+		//
+		// if(den == 0)
+		// 	return false;
+		//
+		// 	int slope = num/den;
+		//
+		// 	if(slope == 1 || slope == -1)
+		// 	{
+		//
+		// 		char p  = 'b';
+		// 		if(player == 0)
+		// 			p = 'w';
+		//
+		// 		// if the place that we move to has the piece of same color
+		// 		// we don't move it
+		// 		if(!Board[to_r][to_c].equals("") && (Board[to_r][to_c].charAt(0) - p) == 0)
+		// 			return false;
+		//
+		// 		return movePiece(player, cur_r, cur_c, to_r, to_c);
+		//
+		// 	}
+		// 	return false;
 	}
 
 	public boolean moveRook(int player, int cur_r, int cur_c, int to_r, int to_c)
@@ -563,43 +537,55 @@ class LBoard
 
 		char p = 'w';
 		if(player == 1)
-			p = 'o';
-		if( (cur_r - to_r == 0 && to_c - cur_c != 0)||(cur_c - to_c == 0 && to_r - cur_r != 0))
+			p = 'b';
+		Vector<Vector<Integer>> tragectory = getTrajectory(Board[cur_r][cur_c]);
+
+		Iterator<Vector<Integer>> itr = tragectory.iterator();
+
+		while(itr.hasNext())
 		{
-			if((Board[to_r][to_c].charAt(0) - p) == 0)
-					return false;
-			boolean result =  movePiece(player, cur_r, cur_c, to_r, to_c);
-
-			if(result)
-			{
-				if(Board[to_r][to_c].charAt(Board[to_r][to_c].length() - 1) - '0' == 0)
-				{
-					if(player == 0)
-					{
-						wr0 = true;
-					}
-					else
-					{
-						br0 = true;
-					}
-				}
-				else if(Board[to_r][to_c].charAt(Board[to_r][to_c].length() - 1) - '1' == 0)
-				{
-					if(player == 0)
-					{
-						wr1 = true;
-					}
-					else
-					{
-						br1 = true;
-					}
-				}
-			}
-
-			return result;
+				Vector<Integer> cor = itr.next();
+				if((int)cor.get(0) == to_r && (int)cor.get(1) == to_c)
+					return true;
 		}
-
 		return false;
+
+		// if( (cur_r - to_r == 0 && to_c - cur_c != 0)||(cur_c - to_c == 0 && to_r - cur_r != 0))
+		// {
+		// 	if(!Board[to_r][to_c].equals("") &&(Board[to_r][to_c].charAt(0) - p) == 0)
+		// 			return false;
+		// 	boolean result =  movePiece(player, cur_r, cur_c, to_r, to_c);
+		//
+		// 	if(result)
+		// 	{
+		// 		if(Board[to_r][to_c].charAt(Board[to_r][to_c].length() - 1) - '0' == 0)
+		// 		{
+		// 			if(player == 0)
+		// 			{
+		// 				wr0 = true;
+		// 			}
+		// 			else
+		// 			{
+		// 				br0 = true;
+		// 			}
+		// 		}
+		// 		else if(Board[to_r][to_c].charAt(Board[to_r][to_c].length() - 1) - '1' == 0)
+		// 		{
+		// 			if(player == 0)
+		// 			{
+		// 				wr1 = true;
+		// 			}
+		// 			else
+		// 			{
+		// 				br1 = true;
+		// 			}
+		// 		}
+		// 	}
+		//
+		// 	return result;
+		// }
+		//
+		// return false;
 	}
 
 
@@ -607,11 +593,11 @@ class LBoard
 	{
 		char p = 'w';
 		if(player == 1)
-			p = 'o';
+			p = 'b';
+		if(!Board[to_r][to_c].equals("") &&(Board[to_r][to_c].charAt(0) - p) == 0)
+				return false;
 		if(moveBishop(player, cur_r, cur_c, to_r, to_c) ^ moveRook(player, cur_r, cur_c, to_r, to_c))
 		{
-			if((Board[to_r][to_c].charAt(0) - p) == 0)
-					return false;
 			return true;
 		}
 		return false;
@@ -626,8 +612,9 @@ class LBoard
 			p = 'o';
 		if((Math.abs(cur_r - to_r) == 1 && Math.abs(cur_c - to_c) == 2) || (Math.abs(cur_r - to_r) == 2 && Math.abs(cur_c - to_c) == 1) )
 		{
-			if((Board[to_r][to_c].charAt(0) - p) == 0)
+			if(!Board[to_r][to_c].equals("") && (Board[to_r][to_c].charAt(0) - p) == 0){
 					return false;
+			}
 			return movePiece(player, cur_r, cur_c, to_r, to_c);
 		}
 		return false;
@@ -897,7 +884,7 @@ class LBoard
 				}
 			}
 			if(isValid(i + 1, j - 1))
-			{ 
+			{
 				if( Board[i+1][j-1].equals("") == false && Board[i + 1][j - 1].charAt(0) - 'b' == 0)
 				{
 					Vector<Integer> c = new Vector<Integer>();
@@ -938,18 +925,18 @@ class LBoard
 		}
 
 		// left
-		int j = y - 1;
-		int i = x - 1;
+		int j = y;
+		int i = x;
 
 		while(i >= 0 && j >= 0)
 		{
-			if(isValid(i, j)&&Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)
+			if(isValid(i, j)&& ((Board[i][j].equals("")) || (Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)))
 			{
 				Vector<Integer> cor = new Vector<Integer>();
 				cor.add(i);
 				cor.add(j);
 				result.add(cor);
-				if(Board[i][j].charAt(0) - otherPlayer == 0)
+				if(Board[i][j].equals("") == false && Board[i][j].charAt(0) - otherPlayer == 0 )
 				{
 					left = true;
 				}
@@ -971,13 +958,13 @@ class LBoard
 		i = x + 1;
 		while(i  < 8 && j < 8)
 		{
-			if(isValid(i, j)&&Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)
+		  if(isValid(i, j)&& ((Board[i][j].equals("")) || (Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)))
 			{
 				Vector<Integer> cor = new Vector<Integer>();
 				cor.add(i);
 				cor.add(j);
 				result.add(cor);
-				if(Board[i][j].charAt(0) - otherPlayer == 0)
+				if(Board[i][j].equals("") == false && Board[i][j].charAt(0) - otherPlayer == 0 )
 				{
 					right = true;
 				}
@@ -1003,13 +990,13 @@ class LBoard
 
 		while(i < 8 && j >= 0)
 		{
-			if(isValid(i, j)&&Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)
+			if(isValid(i, j)&& ((Board[i][j].equals("")) || (Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)))
 			{
 				Vector<Integer> cor = new Vector<Integer>();
 				cor.add(i);
 				cor.add(j);
 				result.add(cor);
-				if(Board[i][j].charAt(0) - otherPlayer == 0)
+				if(Board[i][j].equals("") == false && Board[i][j].charAt(0) - otherPlayer == 0 )
 				{
 					up = true;
 				}
@@ -1035,13 +1022,13 @@ class LBoard
 
 		while(i >= 0 && j < 8)
 		{
-			if(isValid(i, j)&&Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)
+			if(isValid(i, j)&& ((Board[i][j].equals("")) || (Board[i][j].equals("") == false &&  Board[i][j].charAt(0) - player != 0)))
 			{
 				Vector<Integer> cor = new Vector<Integer>();
 				cor.add(i);
 				cor.add(j);
 				result.add(cor);
-				if(Board[i][j].charAt(0) - otherPlayer == 0)
+				if(Board[i][j].equals("") == false && Board[i][j].charAt(0) - otherPlayer == 0 )
 				{
 					down = true;
 				}
@@ -1091,15 +1078,18 @@ class LBoard
 		// left
 		for(int j = y - 1; j >= 0; j--)
 		{
-			if(isValid(x, j)&&Board[x][j].equals("") == false &&  Board[x][j].charAt(0) - player != 0)
+			if(isValid(x, j))
 			{
-				Vector<Integer> cor = new Vector<Integer>();
-				cor.add(x);
-				cor.add(j);
-				result.add(cor);
-				if(Board[x][j].charAt(0) - otherPlayer == 0)
+				if((Board[x][j].equals("") == false &&  Board[x][j].charAt(0) - player != 0) || Board[x][j].equals(""))
 				{
-					left = true;
+						Vector<Integer> cor = new Vector<Integer>();
+						cor.add(x);
+						cor.add(j);
+						result.add(cor);
+						if(Board[x][j].charAt(0) - otherPlayer == 0)
+						{
+							left = true;
+						}
 				}
 			}
 			if(left)
@@ -1115,15 +1105,18 @@ class LBoard
 		//right
 		for(int j = y; j < 8; j++)
 		{
-			if(isValid(x, j)&&Board[x][j].equals("") == false &&  Board[x][j].charAt(0) - player != 0)
+			if(isValid(x, j))
 			{
-				Vector<Integer> cor = new Vector<Integer>();
-				cor.add(x);
-				cor.add(j);
-				result.add(cor);
-				if(Board[x][j].charAt(0) - otherPlayer == 0)
+				if((Board[x][j].equals("") == false &&  Board[x][j].charAt(0) - player != 0) || Board[x][j].equals(""))
 				{
-					right = true;
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(x);
+					cor.add(j);
+					result.add(cor);
+					if(!Board[x][j].equals("") && Board[x][j].charAt(0) - otherPlayer == 0)
+					{
+						right = true;
+					}
 				}
 			}
 			if(right)
@@ -1139,15 +1132,18 @@ class LBoard
 		//up
 		for(int i = x; x < 8; x++)
 		{
-			if(isValid(i, y)&&Board[i][y].equals("") == false &&  Board[i][y].charAt(0) - player != 0)
+			if(isValid(i, y))
 			{
-				Vector<Integer> cor = new Vector<Integer>();
-				cor.add(i);
-				cor.add(y);
-				result.add(cor);
-				if(Board[i][y].charAt(0) - otherPlayer == 0)
+				if((Board[i][y].equals("") == false &&  Board[i][y].charAt(0) - player != 0) || Board[i][y].equals(""))
 				{
-					up = true;
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(i);
+					cor.add(y);
+					result.add(cor);
+					if(!Board[i][y].equals("") && Board[i][y].charAt(0) - otherPlayer == 0)
+					{
+						up = true;
+					}
 				}
 			}
 			if(up)
@@ -1162,15 +1158,18 @@ class LBoard
 		//down
 		for(int i = x; x >= 0; x--)
 		{
-			if(isValid(i, y)&&Board[i][y].equals("") == false &&  Board[i][y].charAt(0) - player != 0)
+			if(isValid(i, y))
 			{
-				Vector<Integer> cor = new Vector<Integer>();
-				cor.add(i);
-				cor.add(y);
-				result.add(cor);
-				if(Board[i][y].charAt(0) - otherPlayer == 0)
+				if((Board[i][y].equals("") == false &&  Board[i][y].charAt(0) - player != 0) || Board[i][y].equals(""))
 				{
-					down = true;
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(i);
+					cor.add(y);
+					result.add(cor);
+					if(!Board[i][y].equals("") &&Board[i][y].charAt(0) - otherPlayer == 0)
+					{
+						down = true;
+					}
 				}
 			}
 			if(down)
