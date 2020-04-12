@@ -184,90 +184,43 @@ class LBoard
 
 	public boolean CheckMate(int Player)
 	{
-		//need to check: (-1,-1)(-1,0)(-1,+1)(0,+1)(+1,+1)(+1,0)(+1,-1)(0,-1)
-		//if king pos is still in check after these moves, then checkmate
-		//if moveKing() returns true, then the moved location is valid and player is not in CheckMate
-		int x = 0;
-		int y = 0;
-		Vector<Integer> Pos = pieceCor.get("wk0");
-		String king = "wk0";
-		if(Player == 0) //player is white
-	      {
-	        Pos = pieceCor.get("wk0");
-					x = Pos.get(0);
-					y = Pos.get(1);
+	int x = 0;
+	int y = 0;
+	Vector<Integer> Pos = pieceCor.get("wk0");
+	String king = "wk0";
+	if(Player == 0) //player is white
+      	{
+        	Pos = pieceCor.get("wk0");
+				x = Pos.get(0);
+				y = Pos.get(1);
 
-				}
-			else if(Player == 1)
+	}
+		else if(Player == 1)
+		{
+			  Pos = pieceCor.get("bk0");
+				x = Pos.get(0);
+				y = Pos.get(1);
+				king = "bk0";
+		}
+		Vector<Vector<Integer>> v = getKingTrajectory(king);
+		Iterator <Vector<Integer>> itr =  v.iterator();
+
+		while(itr.hasNext())
+		{
+			Vector<Integer> C = itr.next();
+			String capturedPiece = Board[(int)C.get(0)][(int)C.get(1)];
+			Board[(int)C.get(0)][(int)C.get(1)] = king;
+			Board[x][y] = "";
+			if(!check(Player))	//player is not in check
 			{
-				  Pos = pieceCor.get("bk0");
-					x = Pos.get(0);
-					y = Pos.get(1);
-					king = "bk0";
+				Board[x][y] = king;
+				Board[(int)C.get(0)][(int)C.get(1)] = capturedPiece;
+				return false;
 			}
-					 // board[x-1][y-1] = "bk0";
-					 // board[x][y] = "";
-					//move and then check if position is in check
-					//0,5
-					if(isValid(x -1, y - 1))
-					{
-						Board[x-1][y-1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-	        else if(isValid(x - 1, y)) //-1,0
-	        {
-						Board[x-1][y] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-					else if(isValid(x - 1, y+1)) //-1,+1
-	        {
-						Board[x-1][y+1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}//0+1
-					else if(isValid(x, y+1)) //0,+1
-	        {
-						Board[x][y+1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}//+1+1
-					else if(isValid(x +1, y+1)) //+1,+1
-	        {
-						Board[x+1][y+1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}//+1,0
-					else if(isValid(x + 1, y)) //+1,0
-	        {
-						Board[x+1][y] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-					else if(isValid(x + 1, y-1)) //+1,-1
-	        {
-						Board[x+1][y-1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-					else if(isValid(x, y-1)) //0,-1
-	        {
-						Board[x][y-1] = king;
-						Board[x][y] = "";
-						if(!check(Player))
-							return false;
-					}
-
-	        //if all those moves dont work, then player is in check CheckMate
-	        return true;
+			Board[x][y] = king;
+			Board[(int)C.get(0)][(int)C.get(1)] = capturedPiece;
+		}
+		return true;
 	}
 
 
