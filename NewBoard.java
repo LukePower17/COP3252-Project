@@ -23,6 +23,7 @@ class Board{
 	private HashSet<String> blackAlive;
 	private HashMap<String, Vector<Integer>> M;
 	private HashMap<String, Boolean> moved;
+	
 	//  0: unmoved
 	//  1: moved by onestep 
 	//  2: moved by 2 steps atleast one step before
@@ -30,6 +31,7 @@ class Board{
 	// -2: promoted
 	// -1: dead
 	// 4: enapssent
+	
 	private int[] whitePawns; 
 	private int[] blackPawns;
 	public Board()
@@ -51,7 +53,7 @@ class Board{
 		}
 
 		M = new HashMap<String, Vector<Integer>>();
-
+		moved = new HashMap<String, Boolean>();
 		// white is at the top
 		String p[] = new String[]{"w", "b"};
 		// intialize the pawns
@@ -117,12 +119,24 @@ class Board{
 			{
 
 				String t = (B[i][j].equals(""))?"   ":B[i][j];
-				if(j != 7){
-					System.out.printf("| %s ", t);
-				}
-				else
+				if(!B[i][j].equals("") && (B[i][j].charAt(1) - 'q' == 0 ||B[i][j].charAt(1) - 'k' == 0))
 				{
-					System.out.println("| "+ t + " |");
+					if(j != 7){
+						System.out.printf("| %s  ", t);
+					}
+					else
+					{
+						System.out.println("| "+ t + "  |");
+					}
+				} 
+				else{
+					if(j != 7){
+						System.out.printf("| %s ", t);
+					}
+					else
+					{
+						System.out.println("| "+ t + " |");
+					}
 				}
 			}
 			System.out.println("  -----------------------------------------------");
@@ -169,9 +183,34 @@ class Board{
 				}while(!(isValid(r_, c_) && !filled(count%2, r_, c_)));
 
 				successfulMove = movePiece(r, c, r_, c_);
+				System.out.println(successfulMove);
 			}while(!successfulMove);
 			
 			display();
+
+			M = new HashMap<String, Vector<Integer>>();
+			whiteAlive = new HashSet<String>();
+			blackAlive = new HashSet<String>();
+			for(int i = 0; i < B.length; i++)
+			{
+				for(int j = 0; j < B[0].length; j++)
+				{
+					if(!B[i][j].equals(""))
+					{
+						Vector<Integer> v = new Vector<Integer>();
+						v.add(i); v.add(j);
+						M.put(B[i][j], v);
+						if(B[i][j].charAt(0) - 'w' == 0)
+						{
+							whiteAlive.add(B[i][j]);
+						}
+						else
+						{
+							blackAlive.add(B[i][j]);
+						}
+					}
+				}
+			}
 			
 			count++;
 		}
@@ -336,9 +375,10 @@ class Board{
 		}
 		else
 		{
+			dX = new int[]{-1};
 			if(blackPawns[ind] == 0)
 			{
-				dX = new int[]{1, 2};
+				dX = new int[]{-1, -2};
 			}
 			else if(blackPawns[ind] <= -1)
 			{
@@ -355,14 +395,14 @@ class Board{
 			{
 				for(int dy: dY)
 				{
-					if(isValid(x + dx, y + dy) && !filled(player, x+dx, y+dy)){
+					if(isValid(x + dx, y + dy) && !filled(player, x+dx, y+dy) && noCheck(piece, x+dx, y+dy)){
 						if(dy == 0||(dy != 0 && filled(otherplayer, x+dy, y + dy))){
 					Vector<Integer> cor = new Vector<Integer>();
 					cor.add(x + dx); cor.add(y + dy);
 					result.add(cor);}}
 				}
 			}
-			else if(isValid(x + dx, y) && !filled(player, x+dx, y)){
+			else if(isValid(x + dx, y) && !filled(player, x+dx, y) && noCheck(piece, x+dx, y)){
 				Vector<Integer> cor = new Vector<Integer>();
 				cor.add(x + dx); cor.add(y);
 				result.add(cor);
@@ -375,7 +415,7 @@ class Board{
 		// then we can move diagonally and capture it
 		dY = new int[]{1, -1};
 		for(int dy: dY){
-			if( isValid(x, y+dy) && filled(otherplayer, x, y+dy) )
+			if( isValid(x, y+dy) && filled(otherplayer, x, y+dy)  && noCheck(piece, x, y+dy) )
 			{
 				if(B[x][y+dy].charAt(1) - 'p' == 0)
 				{
@@ -434,13 +474,14 @@ class Board{
 		Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
 
 		int player = ((piece.charAt(0) - 'w') == 0)?0:1;
-
+		int otherplayer = (player == 0)?1:0;
 		Vector<Integer> Cor = M.get(piece);
 		int r = (int)Cor.get(0);
 		int c = (int)Cor.get(1);
 
+
 		// check vertically
-		int x = r - 1;
+		int x = r;
 		int y = c;
 
 		boolean aboveChecked = false;
@@ -450,71 +491,6 @@ class Board{
 		
 		while(!(aboveChecked && belowChecked && leftChecked && rightChecked))
 		{
-			if(isValid(x, y) && noCheck(piece, x, y))
-			{
-				if(empty(x, y))
-				{
-					Vector<Integer> cor = new Vector<Integer>();
-					cor.add(x);cor.add(y);
-					result.add(cor);
-				}
-				if(filled(player, x, y))
-				{
-					if(!aboveChecked)
-					{
-						aboveChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!belowChecked)
-					{
-						belowChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!leftChecked)
-					{
-						leftChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!rightChecked)
-					{
-						rightChecked = true;
-						x = r;
-						y = c;
-					}
-				}
-				else{
-					Vector<Integer> cor = new Vector<Integer>();
-					cor.add(x);cor.add(y);
-					result.add(cor);
-					if(!aboveChecked)
-					{
-						aboveChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!belowChecked)
-					{
-						belowChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!leftChecked)
-					{
-						leftChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!rightChecked)
-					{
-						rightChecked = true;
-						x = r;
-						y = c;
-					}
-				}
-			}
 			if(!aboveChecked)
 			{x--;}
 			else if(!belowChecked)
@@ -523,6 +499,47 @@ class Board{
 			{y--;}
 			else if(!rightChecked)
 			{y++;}
+			else{break;}
+			
+			if(isValid(x, y) && noCheck(piece, x, y))
+			{
+				if(empty(x, y))
+				{
+					
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(x);cor.add(y);
+					result.add(cor);
+				}
+				else if(filled(player, x, y))
+				{
+					
+					if(!aboveChecked) {aboveChecked = true;}
+					else if(!belowChecked) {belowChecked = true;}
+					else if(!leftChecked){leftChecked = true;}
+					else if(!rightChecked){rightChecked = true;}
+					else{break;}
+					x = r;
+					y = c;
+				}
+				else if(filled(otherplayer, x, y)){
+					
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(x);cor.add(y);
+					result.add(cor);
+					if(!aboveChecked) {aboveChecked = true;}
+					else if(!belowChecked) {belowChecked = true;}
+					else if(!leftChecked){leftChecked = true;}
+					else if(!rightChecked){rightChecked = true;}
+					else{break;}
+					x = r;
+					y = c;
+				}
+				
+			}
+			if(x < 0){aboveChecked = true;x = r;y = c;}
+			if(x > 8){belowChecked = true;x = r;y = c;}
+			if(y < 0){leftChecked = true;x = r;y = c;}
+			if(y > 8){rightChecked = true;x = r;y = c;} 
 		}
 		return result;
 	}
@@ -537,13 +554,14 @@ class Board{
 		Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
 
 		int player = ((piece.charAt(0) - 'w') == 0)?0:1;
+		int otherplayer = (player == 0)?1:0;
 
 		Vector<Integer> Cor = M.get(piece);
 		int r = (int)Cor.get(0);
 		int c = (int)Cor.get(1);
 
 		// check vertically
-		int x = r - 1;
+		int x = r;
 		int y = c;
 		
 
@@ -552,83 +570,59 @@ class Board{
 		boolean lowerLeftChecked = false;
 		boolean lowerRightChecked = false;
 		
-		while(!(upperLeftChecked && upperRightChecked && lowerLeftChecked && lowerRightChecked))
+		while(!(upperLeftChecked && upperRightChecked && lowerLeftChecked  && lowerRightChecked))
 		{
-			if(isValid(x, y) && noCheck(piece, x, y))
-			{
-				if(empty(x, y))
-				{
-					Vector<Integer> cor = new Vector<Integer>();
-					cor.add(x);cor.add(y);
-					result.add(cor);
-				}
-				if(filled(player, x, y))
-				{
-					if(!upperLeftChecked)
-					{
-						upperLeftChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!upperRightChecked)
-					{
-						upperRightChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!lowerLeftChecked)
-					{
-						lowerLeftChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!lowerRightChecked)
-					{
-						lowerRightChecked = true;
-						x = r;
-						y = c;
-					}
-				}
-				else{
-					Vector<Integer> cor = new Vector<Integer>();
-					cor.add(x);cor.add(y);
-					result.add(cor);
-					if(!upperLeftChecked)
-					{
-						upperLeftChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!upperRightChecked)
-					{
-						upperRightChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!lowerLeftChecked)
-					{
-						lowerLeftChecked = true;
-						x = r;
-						y = c;
-					}
-					else if(!lowerRightChecked)
-					{
-						lowerRightChecked = true;
-						x = r;
-						y = c;
-					}
-
-				}
-			}
 			if(!upperLeftChecked)
 			{x--;y--;}
 			else if(!upperRightChecked)
 			{x--;y++;}
-			else if(!lowerLeftChecked)
+			else if(!lowerLeftChecked )
 			{x++;y--;}
 			else if(!lowerRightChecked)
 			{x++;y++;}
+			else{break;}
+			
+			if(isValid(x, y) && noCheck(piece, x, y))
+			{
+				if(empty(x, y))
+				{
+					
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(x);cor.add(y);
+					result.add(cor);
+				}
+				else if(filled(player, x, y))
+				{
+					
+					if(!upperLeftChecked) {upperLeftChecked = true;}
+					else if(!upperRightChecked) {upperRightChecked = true;}
+					else if(!lowerLeftChecked){lowerLeftChecked = true;}
+					else if(!lowerRightChecked){lowerRightChecked = true;}
+					else{break;}
+					x = r;
+					y = c;
+				}
+				else if(filled(otherplayer, x, y)){
+					
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(x);cor.add(y);
+					result.add(cor);
+					if(!upperLeftChecked) {upperLeftChecked = true;}
+					else if(!upperRightChecked) {upperRightChecked = true;}
+					else if(!lowerLeftChecked){lowerLeftChecked = true;}
+					else if(!lowerRightChecked){lowerRightChecked = true;}
+					else{break;}
+					x = r;
+					y = c;
+				}
+				
+			}
+			if(x < 0 && y < 0){upperLeftChecked = true;x = r;y = c;}
+			if(x < 0 && y > 8){upperRightChecked= true;x = r;y = c;}
+			if(x > 8 && y < 0){lowerLeftChecked = true;x = r;y = c;}
+			if(x > 8 && y > 8){lowerRightChecked = true;x = r;y = c;} 
 		}
+		
 		return result;
 	}
 
