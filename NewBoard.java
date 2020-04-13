@@ -23,17 +23,19 @@ class Board{
 	private HashSet<String> blackAlive;
 	private HashMap<String, Vector<Integer>> M;
 	private HashMap<String, Boolean> moved;
-	
+	// Vector<Moves>
+
 	//  0: unmoved
 	//  1: moved by onestep 
 	//  2: moved by 2 steps atleast one step before
-	//  3: just moved by one step
+	//  3: moved by 2 step one step ago
 	// -2: promoted
 	// -1: dead
-	// 4: enapssent
+	//  4: moved and 2 steps
 	
 	private int[] whitePawns; 
 	private int[] blackPawns;
+
 	public Board()
 	{
 		B = new String[8][8];
@@ -149,6 +151,7 @@ class Board{
 		int r_, c_;
 		Scanner input = new Scanner(System.in);
 
+		boolean isPawnMove = false;
 		while(!(checkMate(0) || checkMate(1))){
 			if(count%2 == 0)
 			{
@@ -181,12 +184,50 @@ class Board{
 					r_ -= 1; c_ -= 1;
 					
 				}while(!(isValid(r_, c_) && !filled(count%2, r_, c_)));
-
+				
+				
 				successfulMove = movePiece(r, c, r_, c_);
+				if(successfulMove && B[r_][c_].charAt(1) - 'p' == 0)
+				{
+					isPawnMove = true;
+				}
 				System.out.println(successfulMove);
 			}while(!successfulMove);
 			
 			display();
+
+			if(count%2 == 0)
+			{
+				for(int i = 0; i < blackPawns.length; i++)
+				{
+					String piece = "bp" + String.valueOf(i);
+
+					if(blackAlive.contains(piece) && blackPawns[i] == 3){blackPawns[i] = 2;}
+					else if(!blackAlive.contains(piece)){blackPawns[i] = -1;}
+
+				}
+			}
+			else
+			{
+				for(int i = 0; i < whitePawns.length; i++)
+				{
+					String piece = "wp" + String.valueOf(i);
+					if(whiteAlive.contains(piece) && whitePawns[i] == 3){whitePawns[i] = 2;}
+					else if(!whiteAlive.contains(piece)){whitePawns[i] = -1;}
+				}
+			}
+			if(isPawnMove && promotion(B[r_][c_]))
+			{
+				String p = (count%2 == 0)?"w":"b";
+				System.out.println("What do u want to promote to?");
+				System.out.println("q");
+				System.out.println("n");
+				System.out.println("r");
+				System.out.println("b");
+				String promotedTo = input.nextLine();
+				
+				B[r_][c_] = p+promotedTo+String.valueOf(count);
+			}
 
 			M = new HashMap<String, Vector<Integer>>();
 			whiteAlive = new HashSet<String>();
@@ -212,6 +253,7 @@ class Board{
 				}
 			}
 			
+
 			count++;
 		}
 	}
@@ -221,7 +263,10 @@ class Board{
 		/**Returns true if it is possible to move piece from (r, c) to (r_, c_)*/
 		String piece = B[r][c];
 		
-		// Special case for pawns need to implement it	
+		// Special case for pawns need to implement it
+		
+		boolean isPawn = (B[r][c].charAt(1) - 'p' == 0);
+
 		Vector<Vector<Integer>> trajectory = getTrajectory(B[r][c]);
 
 		Iterator<Vector<Integer>> itr = trajectory.iterator();
@@ -229,13 +274,34 @@ class Board{
 		while(itr.hasNext())
 		{
 			Vector<Integer> cor = itr.next();
-			if((int)cor.get(0) == r_ && (int)cor.get(1) == c_){
+			if((int)cor.get(0) == r_ && (int)cor.get(1) == c_)
+			{
 				B[r_][c_] = B[r][c];
 				B[r][c] = "";
 				Boolean m = moved.get(piece);
+				
 				if(m == false)
 				{
 					moved.put(piece,true);
+				}
+
+				if(isPawn)
+				{
+					char player = B[r][c].charAt(0);
+					int index = Integer.parseInt("" + B[r][c].charAt(2));
+					// 2 steps
+					if(Math.abs(r_ - r) == 2)
+					{
+						if( (player - 'w') == 0)
+						{whitePawns[index] = 3;}
+						else{blackPawns[index] = 3;}
+					}
+					else if(Math.abs(r_ - r) == 1)
+					{
+						if( (player - 'w') == 0)
+						{whitePawns[index] = 1;}
+						else{blackPawns[index] = 1;}
+					}
 				}
 				return true;
 			}
@@ -327,18 +393,19 @@ class Board{
 
 	public boolean promotion(String piece)
 	{
-		if(piece.charAt(1) - 'p' == 0){
+		if(piece.charAt(1) - 'p' == 0)
+		{
 			Vector<Integer> cor = M.get(piece);
 			int x = (int)cor.get(0);
 			char p = piece.charAt(0);
 			if(p - 'w' == 0)
 			{
-				if(x == 6)
+				if(x == 7)
 					return true;
 			}
 			else
 			{
-				if(x == 1)
+				if(x == 0)
 					return true;
 			}
 		}
@@ -352,16 +419,25 @@ class Board{
 		// need to implement enpassent
 
 		Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
+		
 		char p = piece.charAt(0);
-
 		int player = ((p - 'w') == 0)? 0:1;
 		int otherplayer = (player == 0)? 1:0;
 		
+
 		int ind = Integer.parseInt(""+piece.charAt(piece.length() - 1));
+
 		Boolean m = moved.get(piece);
 
 		int dY[] = new int[]{-1, 0, 1};
 		int dX[] = new int[]{1};
+
+		//  0: unmoved
+		//  1: moved by onestep 
+		//  2: moved by 2 steps atleast one step before
+		//  3: just moved by two step
+		// -2: promoted
+		// -1: dead
 		if(p -'w' == 0)
 		{
 			if(whitePawns[ind] == 0)
@@ -402,32 +478,29 @@ class Board{
 					result.add(cor);}}
 				}
 			}
-			else if(isValid(x + dx, y) && !filled(player, x+dx, y) && noCheck(piece, x+dx, y)){
-				Vector<Integer> cor = new Vector<Integer>();
-				cor.add(x + dx); cor.add(y);
-				result.add(cor);
+			else if(isValid(x + dx, y)){
+				if(empty(x+dx-1, y) && empty(x+dx, y) && noCheck(piece, x+dx, y)){
+					Vector<Integer> cor = new Vector<Integer>();
+					cor.add(x + dx); cor.add(y);
+					result.add(cor);
+				}
 			}
 		}
 
 		// enpassent
-
-		// if the empy pawn advances by 2 in its first move 
+		// if the enempy pawn advances by 2 in its first move 
 		// then we can move diagonally and capture it
 		dY = new int[]{1, -1};
+		int dx = (player==0)?1:-1;
 		for(int dy: dY){
-			if( isValid(x, y+dy) && filled(otherplayer, x, y+dy)  && noCheck(piece, x, y+dy) )
+			if(isValid(x, y+dy) && filled(otherplayer, x, y+dy) && noCheck(piece, x, y+dy) )
 			{
-				if(B[x][y+dy].charAt(1) - 'p' == 0)
+				ind = Integer.parseInt(""+B[x][y+dy].charAt(2));
+				int val = (otherplayer == 0)?whitePawns[ind]:blackPawns[ind];
+				if( isValid(x+dx, y+dy) && val == 3 && B[x][y+dy].charAt(1) - 'p' == 0)
 				{
-					ind = Integer.parseInt(""+B[x][y+dy].charAt(2));
-					if(isValid(x+1, y+dy) && otherplayer == 0 && whitePawns[ind] == 3){
-						Vector<Integer> cor = new Vector<Integer>();cor.add(x + 1); cor.add(y+dy);
-						result.add(cor);
-					}
-					else if(isValid(x+1, y+dy) && otherplayer == 1 && blackPawns[ind] == 3){
-						Vector<Integer> cor = new Vector<Integer>();cor.add(x + 1); cor.add(y + dy);
-						result.add(cor);
-					}
+					Vector<Integer> cor = new Vector<Integer>();cor.add(x + 1); cor.add(y+dy);
+					result.add(cor);
 				}
 			}
 		}
@@ -480,7 +553,7 @@ class Board{
 		int c = (int)Cor.get(1);
 
 
-		// check vertically
+		
 		int x = r;
 		int y = c;
 
@@ -560,7 +633,7 @@ class Board{
 		int r = (int)Cor.get(0);
 		int c = (int)Cor.get(1);
 
-		// check vertically
+		
 		int x = r;
 		int y = c;
 		
@@ -664,16 +737,9 @@ class Board{
 
 		for(int ind = 0; ind < dX.length; ind++)
 		{
-			int x = i + dX[ind];
-			int y = j + dY[ind];
-
-			int y_ = j - dY[ind];
-			int x_ = i - dX[ind];
-
-			int X[] = new int[]{x, x_};
-			int Y[] = new int[]{y, y_};
-			for(int a: X){
-				for(int b: Y){
+			int X[] = new int[]{i + dX[ind], i - dX[ind]};
+			int Y[] = new int[]{j + dY[ind], i - dY[ind]};
+			for(int a: X){for(int b: Y){
 					if(isValid(a, b) && noCheck(piece, a, b))
 					{
 						if(B[a][b].equals(""))
