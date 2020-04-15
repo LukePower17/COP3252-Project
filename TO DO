@@ -1,0 +1,12 @@
+Wrote it in the order things came to my mind. Order in which the items appear do not imply that the things are ordered by importance.
+
+1) Timer (Mode)
+2) Tournatment (Mode)
+3) MultiPlayer(Mode)
+4) Save Feature (Saves the Board and whose turn it is next)
+5) Layered Approach (For dragging the peice)
+6) Trajectory of pieces when the sqaure is clicked(Color the squares)
+7) Rotate the Board
+8) Display the captured pieces on the left and the right of Layout
+9) Change board layouts
+10) Display all the previous moves
