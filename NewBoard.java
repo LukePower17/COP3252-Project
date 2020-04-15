@@ -214,8 +214,8 @@ class Board{
 	        }
 	      }
 
-      System.out.println(isPawnMove);
-      System.out.println(promotion(r_, c_));
+      		System.out.println(isPawnMove);
+      		System.out.println(promotion(r_, c_));
 			if(isPawnMove && promotion(r_,c_))
 			{
 				String p = (count%2 == 0)?"w":"b";
@@ -225,8 +225,19 @@ class Board{
 				System.out.println("r");
 				System.out.println("b");
 				//String promotedTo = input.nextLine();
-        char promotedPiece = input.next().charAt(0);
+       			String originalPiece = B[r_][c_];
+       			int ind = Integer.parseInt(""+B[r_][c_].charAt(2));
+
+
+       			M.remove(originalPiece);
+       			if(count%2 == 0){whitePawns[ind] = -2; }
+       			else{blackPawns[ind] = -2;}
+
+       			char promotedPiece = input.next().charAt(0);
 				B[r_][c_] = p+(""+promotedPiece)+String.valueOf(count);
+				
+				moved.put(B[r_][c_], false);
+
 			}
 			display();
 			if(count%2 == 0)
@@ -274,6 +285,23 @@ class Board{
 			}
 
 
+			// Iterator itr = M.entrySet().iterator();
+			// while(itr.hasNext())
+			// {
+			// 	Map.Entry me = (Map.Entry)itr.next();
+			// 	Vector<Integer> cordinates = (Vector<Integer>)me.getValue();
+			// 	System.out.println((String)me.getKey()+" "+(int)cordinates.get(0) + " " + (int)cordinates.get(1));
+			// }
+
+			// for(int i = 0; i < 8; i++)
+			// {
+			// 	System.out.println(whitePawns[i]);
+			// }
+			// for(int i = 0; i < 8; i++)
+			// {
+			// 	System.out.println(blackPawns[i]);
+			// }
+
 			count++;
 		}
 	}
@@ -306,7 +334,7 @@ class Board{
 
 
 				// Castling
-				if(isKing && Math.abs(c - c_) == 2)
+				if(isKing && Math.abs(c - c_) == 2 &&n oCheck(player))
 				{
 					if(c_ == 2)
 					{
@@ -318,7 +346,7 @@ class Board{
 					else if(c_ == 6)
 					{
 						moved.put(B[r][0], true);
-						forceMove(r, 7, r, 4);
+						forceMove(r, 7, r, 5);
 					}
 				}
 
