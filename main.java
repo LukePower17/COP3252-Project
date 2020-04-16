@@ -71,6 +71,7 @@ public class main extends JFrame
 		return;
 	}
 	//test
+	//new test
 	// public void paintComponent(Graphics g) {
 	//    g.setColor(Color.GREEN);
 	//    g.fillRect(0, 0, getSize().width, getSize().height);
