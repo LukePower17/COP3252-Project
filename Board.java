@@ -2,27 +2,17 @@ import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class 
-{
-	public static void main(String args[])
-	{
-		Board b = new Board();
-		b.display();
-		b.play();
-	}
-
-}
 
 class Board{
 
-	private String[][] B;
-	private int count;
+	public String[][] B;
+	public int count;
 
 
-	private HashSet<String> whiteAlive;
-	private HashSet<String> blackAlive;
-	private HashMap<String, Vector<Integer>> M;
-	private HashMap<String, Boolean> moved;
+	public HashSet<String> whiteAlive;
+	public HashSet<String> blackAlive;
+	public HashMap<String, Vector<Integer>> M;
+	public HashMap<String, Boolean> moved;
 	// Vector<Moves>
 
 	//  0: unmoved
@@ -334,7 +324,7 @@ class Board{
 
 
 				// Castling
-				if(isKing && Math.abs(c - c_) == 2 &&n oCheck(player))
+				if(isKing && Math.abs(c - c_) == 2 && noCheck(B[r][c], r, c))
 				{
 					if(c_ == 2)
 					{
