@@ -12,18 +12,6 @@ import javax.swing.*;
 public class main extends JFrame
 //extends JPanel implements ActionListner
 {
-	//public Icon WPawn = new ImageIcon("white_pawn.png");
-	public Icon BPawn = new ImageIcon("black_pawn.png");
-	public Icon WBish = new ImageIcon("white_bishop.png");
-	public Icon BBish = new ImageIcon("black_bishop.png");
-	public Icon WRook = new ImageIcon("white_rook.png");
-	public Icon BRook = new ImageIcon("black_rook.png");
-	public Icon WQueen = new ImageIcon("white_queen.png");
-	public Icon BQueen = new ImageIcon("black_queen.png");
-	public Icon BKing = new ImageIcon("black_king.png");
-	public Icon WKing = new ImageIcon("white_king.png");
-	public Icon BKnight = new ImageIcon("black_knight.png");
-	public Icon WKnight = new ImageIcon("white_knight.png");
 
 	public static void main(String args[])
 	{
@@ -36,6 +24,17 @@ public class main extends JFrame
 		controls.setLayout(new GridLayout(8, 8,0,0));
 		JButton[][] b = new JButton[8][8];
 		Icon WPawn = new ImageIcon("white_pawn.png");
+		Icon BPawn = new ImageIcon("black_pawn.png");
+		Icon WBish = new ImageIcon("white_bishop.png");
+		Icon BBish = new ImageIcon("black_bishop.png");
+		Icon WRook = new ImageIcon("white_rook.png");
+		Icon BRook = new ImageIcon("black_rook.png");
+		Icon WQueen = new ImageIcon("white_queen.png");
+		Icon BQueen = new ImageIcon("black_queen.png");
+		Icon BKing = new ImageIcon("black_king.png");
+		Icon WKing = new ImageIcon("white_king.png");
+		Icon BKnight = new ImageIcon("black_knight.png");
+		Icon WKnight = new ImageIcon("white_knight.png");
 
 		for(int i = 0; i < 8; i++)//i is rows
 		{
@@ -71,11 +70,12 @@ public class main extends JFrame
 		frame.add(controls);
 		return;
 	}
+	//test
 	// public void paintComponent(Graphics g) {
 	//    g.setColor(Color.GREEN);
 	//    g.fillRect(0, 0, getSize().width, getSize().height);
 	// }
-	// public static String display(JButton[][] button)
+	// public static String display(JButton[][] button,)
 	// {
 	//
 	// }
