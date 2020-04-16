@@ -689,15 +689,15 @@ class Board{
 			{
 				for(int dy: dY)
 				{
-          System.out.println("Pawn " + (x +  dx) + " "+ (y + dy));
+          // System.out.println("Pawn " + (x +  dx) + " "+ (y + dy));
           // System.out.println(filled(player,  x+dx, y+dy));
-          System.out.println(filled(otherplayer,  x+dx, y+dy));
+          // System.out.println(filled(otherplayer,  x+dx, y+dy));
           //System.out.println((dy == 0||(dy != 0 && filled(otherplayer, x+dy, y + dy))));
           //System.out.println(dy == 0);
           //System.out.println((dy != 0 && filled(otherplayer, x+dy, y + dy)));
-          System.out.println(dy != 0 );
-          System.out.println((filled(otherplayer, x+dy, y + dy)));
-          System.out.println(dy);
+          // System.out.println(dy != 0 );
+          // System.out.println((filled(otherplayer, x+dy, y + dy)));
+          // System.out.println(dy);
 					if(isValid(x + dx, y + dy) && !filled(player, x+dx, y+dy) && noCheck(piece, x+dx, y+dy)){
 						if(dy == 0||(dy != 0 && filled(otherplayer, x+dx, y + dy))){
 					Vector<Integer> cor = new Vector<Integer>();
@@ -978,8 +978,8 @@ class Board{
 		int i = cor.get(0);
 		int j = cor.get(1);
 
-		System.out.println("i " + i);
-		System.out.println("j " + j);
+		// System.out.println("i " + i);
+		// System.out.println("j " + j);
 
 		int dX[] = new int[]{2, 1};
 		int dY[] = new int[]{1, 2};
