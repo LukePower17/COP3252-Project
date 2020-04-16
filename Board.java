@@ -769,7 +769,6 @@ public class Board{
 			for(int dx:dX)
 			{
 				int x = r + dx; int y = c + dy;
-        System.out.println("King" +x+ " "+ y);
 				if(isValid(x, y) && !filled(player, x, y) && noCheck(piece, x, y))
 				{
 					Cor = new Vector<Integer>();
@@ -1143,7 +1142,6 @@ public class Board{
 			for(int dx:dX)
 			{
 				int x = r + dx; int y = c + dy;
-        System.out.println("King" + x+ " "+ y);
 				if(isValid(x, y) && !filled(player, x, y))
 				{
 					Cor = new Vector<Integer>();
