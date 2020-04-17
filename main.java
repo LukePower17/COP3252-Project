@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 import javax.swing.*;
+import java.lang.*;
+import java.util.*;
 
 
 public class main
@@ -16,7 +18,7 @@ public class main
 		chess C = new chess();
 		//C.show();
 		C.display();
-
+		C.colors();
 	}
 }
 
@@ -40,9 +42,11 @@ class chess extends JFrame
 	private Icon BKnight;
 	private Icon WKnight;
 	private Board board;
+	private Color selected;
 
 	public chess()
 	{
+		//setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("./Imgs/white_pawn.png")));
 		WPawn = new ImageIcon("./Imgs/white_pawn.png");
 		BPawn = new ImageIcon("./Imgs/black_pawn.png");
 		WBish = new ImageIcon("./Imgs/white_bishop.png");
@@ -55,13 +59,14 @@ class chess extends JFrame
 		WKing = new ImageIcon("./Imgs/white_king.png");
 		BKnight = new ImageIcon("./Imgs/black_knight.png");
 		WKnight = new ImageIcon("./Imgs/white_knight.png");
+		selected = new Color(0, 255, 0,100);
 		b = new JButton[8][8];
 		board = new Board();
 		JFrame frame = new JFrame("Chess");
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(720, 720);
-
+	
 		JPanel controls = new JPanel();
 		controls.setLayout(new GridLayout(8, 8,0,0));
 
@@ -76,7 +81,8 @@ class chess extends JFrame
 				 b[i][j] = new JButton();
 
 				if(j%2 == (i%2)){
-					b[i][j].setBackground(new Color(118, 150, 86));
+					//b[i][j].setBackground(new Color(118, 150, 86));
+					b[i][j].setBackground(new Color(10, 10, 10,150));
 
 				}
 				else
@@ -141,6 +147,24 @@ class chess extends JFrame
 							b[i][j].setIcon(BBish);
 				}
 			}
+		}
+
+	}
+
+	public void colors()
+	{
+		int x;
+		int y;
+		Vector<Vector<Integer>> v = board.getTrajectory(board.B[6][2]);
+		Iterator <Vector<Integer>> itr =  v.iterator();
+		b[6][2].setBackground(selected);
+		while(itr.hasNext())
+		{
+			Vector<Integer> C = itr.next();
+			x = C.get(0);
+			y = C.get(1);
+			b[x][y].setBackground(selected);
+
 		}
 
 	}
