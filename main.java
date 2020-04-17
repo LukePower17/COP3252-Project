@@ -14,7 +14,7 @@ public class main
 	public static void main(String args[])
 	{
 		chess C = new chess();
-		C.show();
+		C.play();
 
 	}
 }
@@ -54,8 +54,10 @@ public class chess extends JFrame
 		WKing = new ImageIcon("./Imgs/white_king.png");
 		BKnight = new ImageIcon("./Imgs/black_knight.png");
 		WKnight = new ImageIcon("./Imgs/white_knight.png");
+		
 		b = new JButton[8][8];
 		board = new Board();
+		
 		JFrame frame = new JFrame("Chess");
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,7 +103,7 @@ public class chess extends JFrame
 
 	}
 
-
+	
 	public void display()
 	{
 
