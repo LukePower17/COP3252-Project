@@ -14,14 +14,15 @@ public class main
 	public static void main(String args[])
 	{
 		chess C = new chess();
-		C.show();
+		//C.show();
+		C.display();
 
 	}
 }
 
 
 //import Board;
-public class chess extends JFrame
+class chess extends JFrame
 //extends JPanel implements ActionListner
 {
 
@@ -59,7 +60,7 @@ public class chess extends JFrame
 		JFrame frame = new JFrame("Chess");
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(800, 800);
+		frame.setSize(720, 720);
 
 		JPanel controls = new JPanel();
 		controls.setLayout(new GridLayout(8, 8,0,0));
@@ -73,11 +74,6 @@ public class chess extends JFrame
 				//Rectangle sq = new Rectangle(x, y, 100, 100);
 
 				 b[i][j] = new JButton();
-				if(i == 1)
-				{
-
-					b[i][j].setIcon(WPawn);
-				}
 
 				if(j%2 == (i%2)){
 					b[i][j].setBackground(new Color(118, 150, 86));
@@ -125,7 +121,7 @@ public class chess extends JFrame
 						else if((board.B[i][j].charAt(1) - 'r' == 0))
 							b[i][j].setIcon(WRook);
 						else if((board.B[i][j].charAt(1) - 'n' == 0))
-							b[i][j].setIcon(WPawn);
+							b[i][j].setIcon(WKnight);
 						else if((board.B[i][j].charAt(1) - 'b' == 0))
 							b[i][j].setIcon(WBish);
 				}
@@ -140,7 +136,7 @@ public class chess extends JFrame
 						else if((board.B[i][j].charAt(1) - 'r' == 0))
 							b[i][j].setIcon(BRook);
 						else if((board.B[i][j].charAt(1) - 'n' == 0))
-							b[i][j].setIcon(BPawn);
+							b[i][j].setIcon(BKnight);
 						else if((board.B[i][j].charAt(1) - 'b' == 0))
 							b[i][j].setIcon(BBish);
 				}
