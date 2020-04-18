@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.lang.*;
 import java.util.*;
 import java.io.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class main
 {
@@ -41,35 +43,28 @@ class chess extends JFrame
 	private File loadedFile;
 	private String loadedGame ="";
 
-	class MenuActionListener implements ActionListener {
+	class MenuActionListener implements ActionListener
+	{
 		public void actionPerformed(ActionEvent e)
 		{
-			try
-			{
-
-				FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
-			  dialog.setMode(FileDialog.LOAD);
-			  dialog.setVisible(true);
-			  File file = new File( dialog.getFile() );
-			  //System.out.println(file + " chosen.");
-				BufferedReader br = new BufferedReader(new FileReader(file));
-
-				String st;
- 				while ((st = br.readLine()) != null)
-    		{
-					loadedGame += st;
-				}
-
-				//then set the board using fuction call:
-				//setBoard(loadedGame);
-			}
-			catch(Exception ex)
-			{
-
-			}
+			loadGame();
 		}
 	}
 
+	class MenuActionListenerSave implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			saveGame();
+		}
+	}
+	class MenuActionListenerCreate implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			createGame();
+		}
+	}
 	public chess()
 	{
 		//setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("./Imgs/white_pawn.png")));
@@ -96,7 +91,9 @@ class chess extends JFrame
 		menu = new JMenu("File");
 		theme = new JMenu("Theme");
 		save = new JMenuItem("Save game");
+		save.addActionListener(new MenuActionListenerSave());
 		create = new JMenuItem("Create new game");
+		create.addActionListener(new MenuActionListenerCreate());
 		load = new JMenuItem("Load game");
 		load.addActionListener(new MenuActionListener());
 		light = new JRadioButtonMenuItem("Light theme");
@@ -206,6 +203,7 @@ class chess extends JFrame
 
 	public void colors()
 	{
+
 		int x;
 		int y;
 		Vector<Vector<Integer>> v = board.getTrajectory(board.B[7][6]);
@@ -219,7 +217,79 @@ class chess extends JFrame
 			b[x][y].setBackground(selected);
 
 		}
+	}
+		public void saveGame()
+		{
+			System.out.println("inside saveGame");
+			String saveName = "chessGame_";
+			SimpleDateFormat dateFormat = new SimpleDateFormat("MM_dd_yyy_HH_mm_ss");
+			Date date = new Date();
+			saveName += dateFormat.format(date);
+
+			try
+			{
+					FileWriter myWriter = new FileWriter(saveName);
+					for(int i = 0; i < 8; i++)//i is rows
+					{
+						for(int j = 0; j < 8; j++)
+						{
+							myWriter.write(board.B[i][j] + ",");
+						}
+					}
+					myWriter.close();
+			}
+			catch (IOException e)
+			{
+		 		System.out.println("An error occurred.");
+		 		e.printStackTrace();
+	 		}
+		}
+		public void loadGame()
+		{
+			try
+			{
+
+				FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
+			  dialog.setMode(FileDialog.LOAD);
+			  dialog.setVisible(true);
+			  File file = new File( dialog.getFile() );
+			  //System.out.println(file + " chosen.");
+				BufferedReader br = new BufferedReader(new FileReader(file));
+
+				String st;
+ 				while ((st = br.readLine()) != null)
+    		{
+					loadedGame += st;
+				}
+				System.out.println(loadedGame);
+				//then set the board using fuction call:
+				setBoard(loadedGame);
+			}
+			catch(Exception ex)
+			{
+
+			}
+
+		}
+		public void createGame()
+		{
+
+
+
+		}
+		public void setBoard(String str)
+		{
+			String [][] test;
+			String [] token;
+			// for(int i = 0; i < 8; i++)//i is rows
+			// {
+			// 	for(int j = 0; j < 8; j++)
+			// 	{
+			// 		token[k] = str.split(",");
+			// 	}
+			// }
+
+		}
+
 
 	}
-
-}
