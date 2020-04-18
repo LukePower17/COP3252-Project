@@ -135,64 +135,61 @@ class Board{
 		}
 	}
 
-	public void play()
+	public boolean playMove(int r, int c, int r_, int c_)
 	{
-		System.out.println("P called");
-		int r, c;
-		int r_, c_;
-		Scanner input = new Scanner(System.in);
 
-		boolean isPawnMove = false;
-		count = 0;
-		while(true)
-		{
-			//
+//		int r, c;
+//		int r_, c_;
+//		Scanner input = new Scanner(System.in);
 
-			System.out.println((checkMate(0)));
-			System.out.println(checkMate(1));
-			isPawnMove = false;
-			if(count%2 == 0)
-			{
-				System.out.println("White to play");
-			}
-			else
-			{
-				System.out.println("Black to play");
-			}
-
-			char player = (count%2 == 0)?'w':'b';
-
-			boolean successfulMove = false;
-			
-			do{
-				do{
-					System.out.println("row: ");
-					r = input.nextInt();
-					System.out.println("col: ");
-					c = input.nextInt();
-
-					r -= 1;c -= 1;
-
-				}while(!filled(count%2, r, c));
-
-				do{
-					System.out.println("to row:");
-					r_ = input.nextInt();
-					System.out.println("to col:");
-					c_ = input.nextInt();
-
-					r_ -= 1; c_ -= 1;
-
-				}while(!(isValid(r_, c_) && !filled(count%2, r_, c_)));
-
+//		boolean isPawnMove = false;
+////		count = 0;
+//		while(!(checkMate(0)||checkMate(1)))
+//		{
+//		
+//			isPawnMove = false;
+//			if(count%2 == 0)
+//			{
+//				System.out.println("White to play");
+//			}
+//			else
+//			{
+//				System.out.println("Black to play");
+//			}
+//
+//			char player = (count%2 == 0)?'w':'b';
+//
+//			boolean successfulMove = false;
+//			
+//			do{
+//				do{
+//					System.out.println("row: ");
+//					r = input.nextInt();
+//					System.out.println("col: ");
+//					c = input.nextInt();
+//
+//					r -= 1;c -= 1;
+//
+//				}while(!filled(count%2, r, c));
+//
+//				do{
+//					System.out.println("to row:");
+//					r_ = input.nextInt();
+//					System.out.println("to col:");
+//					c_ = input.nextInt();
+//
+//					r_ -= 1; c_ -= 1;
+//
+//				}while(!(isValid(r_, c_) && !filled(count%2, r_, c_)));
+//
 
 				successfulMove = movePiece(r, c, r_, c_);
 				if(successfulMove && B[r_][c_].charAt(1) - 'p' == 0)
 				{
 					isPawnMove = true;
 				}
-				System.out.println(successfulMove);
-			}while(!successfulMove);
+//				System.out.println(successfulMove);
+//			}while(!successfulMove);
 
 
 
@@ -239,7 +236,7 @@ class Board{
 				moved.put(B[r_][c_], false);
 
 			}
-			display();
+//			display();
 			
 
 			if(count%2 == 0)
@@ -287,39 +284,13 @@ class Board{
 				}
 			}
 
-
-			Iterator itr = M.entrySet().iterator();
-			while(itr.hasNext())
-			{
-				Map.Entry me = (Map.Entry)itr.next();
-				
-				Vector<Integer> cordinates = (Vector<Integer>)me.getValue();
-				
-
-				Vector<Vector<Integer>> trajectory = getTrajectory((String)me.getKey());
-				System.out.println((String)me.getKey()+" "+(int)cordinates.get(0) + " " + (int)cordinates.get(1));
-				
-				Iterator<Vector<Integer>> I = trajectory.iterator();
-				while(I.hasNext())
-				{
-					Vector<Integer> pos = I.next();
-					System.out.println((int)pos.get(0)+" "+(int)pos.get(1));
-				}
-			}
-
-			// for(int i = 0; i < 8; i++)
-			// {
-			// 	System.out.println(whitePawns[i]);
-			// }
-			// for(int i = 0; i < 8; i++)
-			// {
-			// 	System.out.println(blackPawns[i]);
-			// }
-
 			count++;
 		}
 	}
 
+	
+	
+	
 	public boolean movePiece(int r, int c, int r_, int c_)
 	{
 		/**Returns true if it is possible to move piece from (r, c) to (r_, c_)*/
@@ -408,7 +379,6 @@ class Board{
 
 		int counter = 0;
 		
-		System.out.println("Checkmate ");
 	    if(Check(player))
 	    {
 	    	System.out.println(Check(player));
@@ -805,9 +775,9 @@ class Board{
 
 		int dY[] = new int[]{1, 0, -1};
 		int dX[] = new int[]{1, 0, -1};
-		System.out.println(piece);
+		// System.out.println(piece);
 
-		System.out.println("In king trajectory");
+		// System.out.println("In king trajectory");
 		
 		for(int dy:dY)
 		{
@@ -825,8 +795,8 @@ class Board{
 
 				if(cond)
 				{
-					System.out.println(normal + "normal");
-					System.out.println(x + " "+ y);
+					// System.out.println(normal + "normal");
+					// System.out.println(x + " "+ y);
 					// System.out.println(" true");
 					Cor = new Vector<Integer>();
 					Cor.add(x); Cor.add(y);
@@ -849,14 +819,14 @@ class Board{
 			result.add(Cor);
 		}
 
-		System.out.println("-----------------------------");
-		System.out.println(result.size());
-		Iterator<Vector<Integer>> a = result.iterator();
-		while(a.hasNext())
-		{
-			Vector<Integer> CorIn = a.next();
-			System.out.println(CorIn.get(0)+" "+CorIn.get(1));
-		}
+		// System.out.println("-----------------------------");
+		// System.out.println(result.size());
+		// Iterator<Vector<Integer>> a = result.iterator();
+		// while(a.hasNext())
+		// {
+		// 	Vector<Integer> CorIn = a.next();
+		// 	System.out.println(CorIn.get(0)+" "+CorIn.get(1));
+		// }
 		return result;
 
 	}
