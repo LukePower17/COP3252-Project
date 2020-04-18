@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.*;
 import java.lang.*;
 import java.util.*;
-
+import java.io.*;
 
 public class main
 {
@@ -29,20 +29,46 @@ class chess extends JFrame
 {
 
 	private	JButton[][] b;
-	private Icon WPawn;
-	private Icon BPawn;
-	private Icon WBish;
-	private Icon BBish;
-	private Icon WRook;
-	private Icon BRook;
-	private Icon WQueen;
-	private Icon BQueen;
-	private Icon BKing;
-	private Icon WKing;
-	private Icon BKnight;
-	private Icon WKnight;
+	private JMenuBar menuBar;
+	private JMenuItem load, create, save;
+	private JMenu menu, theme;
+	private JRadioButtonMenuItem dark, light;
+	private Icon WPawn, WBish, WRook, WQueen, WKing, WKnight;
+	private Icon BPawn, BBish, BRook, BQueen, BKing, BKnight;
 	private Board board;
 	private Color selected;
+	private ButtonGroup Group;
+	private File loadedFile;
+	private String loadedGame ="";
+
+	class MenuActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent e)
+		{
+			try
+			{
+
+				FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
+			  dialog.setMode(FileDialog.LOAD);
+			  dialog.setVisible(true);
+			  File file = new File( dialog.getFile() );
+			  //System.out.println(file + " chosen.");
+				BufferedReader br = new BufferedReader(new FileReader(file));
+
+				String st;
+ 				while ((st = br.readLine()) != null)
+    		{
+					loadedGame += st;
+				}
+
+				//then set the board using fuction call:
+				//setBoard(loadedGame);
+			}
+			catch(Exception ex)
+			{
+
+			}
+		}
+	}
 
 	public chess()
 	{
@@ -66,10 +92,30 @@ class chess extends JFrame
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(720, 720);
-	
+		menuBar = new JMenuBar();
+		menu = new JMenu("File");
+		theme = new JMenu("Theme");
+		save = new JMenuItem("Save game");
+		create = new JMenuItem("Create new game");
+		load = new JMenuItem("Load game");
+		load.addActionListener(new MenuActionListener());
+		light = new JRadioButtonMenuItem("Light theme");
+		Group = new ButtonGroup();
+		theme.add(light);
+		dark = new JRadioButtonMenuItem("Dark theme", true);
+		theme.add(dark);
+		Group.add(light);
+		Group.add(dark);
+		menu.add(create);
+		menu.add(save);
+		menu.add(load);
+		menuBar.add(menu);
+		menuBar.add(theme);
+		frame.setJMenuBar(menuBar);
+		boolean isDarkSelected = dark.isSelected();
+
 		JPanel controls = new JPanel();
 		controls.setLayout(new GridLayout(8, 8,0,0));
-
 
 
 		for(int i = 0; i < 8; i++)//i is rows
@@ -81,8 +127,15 @@ class chess extends JFrame
 				 b[i][j] = new JButton();
 
 				if(j%2 == (i%2)){
-					//b[i][j].setBackground(new Color(118, 150, 86));
-					b[i][j].setBackground(new Color(10, 10, 10,150));
+
+					if(isDarkSelected)
+					{
+						b[i][j].setBackground(new Color(10, 10, 10,150));
+					}
+					else
+					{
+						b[i][j].setBackground(new Color(118, 150, 86));
+					}
 
 				}
 				else
@@ -155,9 +208,9 @@ class chess extends JFrame
 	{
 		int x;
 		int y;
-		Vector<Vector<Integer>> v = board.getTrajectory(board.B[6][2]);
+		Vector<Vector<Integer>> v = board.getTrajectory(board.B[7][6]);
 		Iterator <Vector<Integer>> itr =  v.iterator();
-		b[6][2].setBackground(selected);
+		b[7][6].setBackground(selected);
 		while(itr.hasNext())
 		{
 			Vector<Integer> C = itr.next();
