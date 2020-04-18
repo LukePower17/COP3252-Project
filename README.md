@@ -1,2 +1,1 @@
-# COP3252-Project
-<h2>COP3252 Project </h2>
+<p>Created a chess Game using Java GUI</p>
