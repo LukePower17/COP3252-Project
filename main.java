@@ -16,9 +16,7 @@ public class main
 	public static void main(String args[])
 	{
 		chess C = new chess();
-		//C.show();
 		C.display();
-
 	}
 }
 
@@ -54,8 +52,15 @@ class chess extends JFrame implements ActionListener
 	
 	public chess() 
 	{
-		
 		super("Chess");
+		try {
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		
 		//setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("./Imgs/white_pawn.png")));
 		WPawn = new ImageIcon("./Imgs/white_pawn.png");
 		BPawn = new ImageIcon("./Imgs/black_pawn.png");
@@ -116,22 +121,18 @@ class chess extends JFrame implements ActionListener
 
 		super.add(controls);
 		
-		//caddActionListener(this);
-		
-	
 	}
 
-//	public void play()
-//	{
-//
-//		while(!(this.board.checkMate(0) || this.board.checkMate(1)))
-//		{
-//			
-//	
-//			c
-//		}
-//	
-//	}
+	public boolean play()
+	{
+		int result = -3;
+		if(!(this.board.checkMate(0) || this.board.checkMate(1)))
+		{
+			 result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
+			this.count += 1;
+		}
+		return (result == 0);
+	}
 
 
 	public void display()
@@ -143,6 +144,20 @@ class chess extends JFrame implements ActionListener
 			{
 				if(board.B[i][j].equals(""))	//empty spot
 				{
+					Color white = new Color(238, 238, 210);
+					Color black = new Color(10, 10, 10,150);
+					 
+					Color green = new Color(0, 200,0,  150);
+					Color red = new Color(225, 0, 0, 150);
+					
+					this.b[i][j].setIcon(null);
+					if(i%2 == j%2) {
+						this.b[i][j].setBackground(Color.BLACK);
+					}
+					else
+					{
+						this.b[i][j].setBackground(white);
+					}
 					continue;
 				}
 
@@ -184,10 +199,11 @@ class chess extends JFrame implements ActionListener
 
 	public void highlightTrajectory(int x, int y)
 	{
-		// know which btn was clicked
 		
 		Vector<Vector<Integer>> v = this.board.getTrajectory(this.board.B[x][y]);
 		Iterator <Vector<Integer>> itr =  v.iterator();
+		
+		//b[x][y].activeMode();
 		
 		while(itr.hasNext())
 		{
@@ -237,20 +253,30 @@ class chess extends JFrame implements ActionListener
 				}
 			}
 		}
-		System.out.println(this.r+" "+ this.c+" "+this.r_ +" "+this.c_);
 		if(clicked == 1) 
 		{
 			this.highlightTrajectory(this.r, this.c);
 		}
 		if(clicked == 0)
 		{
+			boolean result = this.play();
+			
+			display();
 			for(int i = 0; i < b.length; i++)
 			{
 				for(int j = 0; j < b[0].length; j++)
 				{
 					b[i][j].normalMode();
+					
+					if(result  && ((i == this.r && j == this.c) || (i == this.r_ && j == this.c_) ) )
+					{
+						b[i][j].lastMoveMode();
+					}
+					
 				}
 			}
+			
+			
 			
 		}
 		return;
@@ -261,9 +287,7 @@ class chess extends JFrame implements ActionListener
 
 
 
-
 class square extends JButton
-//implements ActionListener
 {
 	private Color normalColor;
 	private Color activeColor;
@@ -274,7 +298,6 @@ class square extends JButton
 	
 	public square(Color normal, Color active, Color danger, Color lastMove)
 	{
-		/** square(Color normal, Color active, Color danger, Color lastMove)*/
 		super();
 		normalColor = normal;
 		activeColor = active;
@@ -285,7 +308,6 @@ class square extends JButton
 		super.setBorder(null);
 		super.setOpaque(true);
 		super.setBackground(normalColor);
-		//super.addActionListener(this);
 		
 	}
 	
@@ -298,18 +320,6 @@ class square extends JButton
 	{
 		super.addActionListener(obj);
 	}
-	
-//	public void actionPerformed(ActionEvent e)
-//	{
-//		
-//		if(!selected) {selected = true;}
-//		else if(selected) {selected = false;}
-//		
-//		if(selected && hasIcon)
-//		{
-//			activeMode();
-//		}
-//	}
 	
 	public void normalMode()
 	{
@@ -333,7 +343,15 @@ class square extends JButton
 	{
 		
 		super.setIcon(icon);
-		hasIcon = true;
+		if(icon == null)
+			hasIcon = false;
+		else
+			hasIcon = true;
+	}
+	
+	public void setBackground(Color c)
+	{
+		super.setBackground(c);
 	}
 }
 

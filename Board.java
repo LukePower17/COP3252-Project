@@ -135,61 +135,64 @@ class Board{
 		}
 	}
 
-	public boolean playMove(int r, int c, int r_, int c_)
+	public void play()
 	{
+		System.out.println("P called");
+		int r, c;
+		int r_, c_;
+		Scanner input = new Scanner(System.in);
 
-//		int r, c;
-//		int r_, c_;
-//		Scanner input = new Scanner(System.in);
+		boolean isPawnMove = false;
+		count = 0;
+		while(true)
+		{
+			//
 
-//		boolean isPawnMove = false;
-////		count = 0;
-//		while(!(checkMate(0)||checkMate(1)))
-//		{
-//		
-//			isPawnMove = false;
-//			if(count%2 == 0)
-//			{
-//				System.out.println("White to play");
-//			}
-//			else
-//			{
-//				System.out.println("Black to play");
-//			}
-//
-//			char player = (count%2 == 0)?'w':'b';
-//
-//			boolean successfulMove = false;
-//			
-//			do{
-//				do{
-//					System.out.println("row: ");
-//					r = input.nextInt();
-//					System.out.println("col: ");
-//					c = input.nextInt();
-//
-//					r -= 1;c -= 1;
-//
-//				}while(!filled(count%2, r, c));
-//
-//				do{
-//					System.out.println("to row:");
-//					r_ = input.nextInt();
-//					System.out.println("to col:");
-//					c_ = input.nextInt();
-//
-//					r_ -= 1; c_ -= 1;
-//
-//				}while(!(isValid(r_, c_) && !filled(count%2, r_, c_)));
-//
+			System.out.println((checkMate(0)));
+			System.out.println(checkMate(1));
+			isPawnMove = false;
+			if(count%2 == 0)
+			{
+				System.out.println("White to play");
+			}
+			else
+			{
+				System.out.println("Black to play");
+			}
+
+			char player = (count%2 == 0)?'w':'b';
+
+			boolean successfulMove = false;
+			
+			do{
+				do{
+					System.out.println("row: ");
+					r = input.nextInt();
+					System.out.println("col: ");
+					c = input.nextInt();
+
+					r -= 1;c -= 1;
+
+				}while(!filled(count%2, r, c));
+
+				do{
+					System.out.println("to row:");
+					r_ = input.nextInt();
+					System.out.println("to col:");
+					c_ = input.nextInt();
+
+					r_ -= 1; c_ -= 1;
+
+				}while(!(isValid(r_, c_) && !filled(count%2, r_, c_)));
+
 
 				successfulMove = movePiece(r, c, r_, c_);
 				if(successfulMove && B[r_][c_].charAt(1) - 'p' == 0)
 				{
 					isPawnMove = true;
 				}
-//				System.out.println(successfulMove);
-//			}while(!successfulMove);
+				System.out.println(successfulMove);
+			}while(!successfulMove);
 
 
 
@@ -236,7 +239,7 @@ class Board{
 				moved.put(B[r_][c_], false);
 
 			}
-//			display();
+			display();
 			
 
 			if(count%2 == 0)
@@ -284,8 +287,159 @@ class Board{
 				}
 			}
 
+
+//			Iterator itr = M.entrySet().iterator();
+//			while(itr.hasNext())
+//			{
+//				Map.Entry me = (Map.Entry)itr.next();
+//				
+//				Vector<Integer> cordinates = (Vector<Integer>)me.getValue();
+//				
+//
+//				Vector<Vector<Integer>> trajectory = getTrajectory((String)me.getKey());
+//				System.out.println((String)me.getKey()+" "+(int)cordinates.get(0) + " " + (int)cordinates.get(1));
+//				
+//				Iterator<Vector<Integer>> I = trajectory.iterator();
+//				while(I.hasNext())
+//				{
+//					Vector<Integer> pos = I.next();
+//					System.out.println((int)pos.get(0)+" "+(int)pos.get(1));
+//				}
+//			}
+
+			// for(int i = 0; i < 8; i++)
+			// {
+			// 	System.out.println(whitePawns[i]);
+			// }
+			// for(int i = 0; i < 8; i++)
+			// {
+			// 	System.out.println(blackPawns[i]);
+			// }
+
 			count++;
 		}
+	}
+	// -2 if check mate 
+	//  0 if normal
+	//  1 if promotion
+	// -1 if move not valid
+	public int playMove(int r, int c, int r_, int c_, int count)
+	{
+
+		boolean isPawnMove = false;
+		
+		if(!(checkMate(0)||checkMate(1)))
+		{
+			
+			isPawnMove = false;
+
+			char player = (count%2 == 0)?'w':'b';
+
+			boolean successfulMove = false;
+			
+			successfulMove = movePiece(r, c, r_, c_);
+			
+			if(successfulMove && B[r_][c_].charAt(1) - 'p' == 0)
+			{
+				isPawnMove = true;
+			}
+			if(!successfulMove)
+			{
+				return -1;
+			}
+		}
+
+		  if(isPawnMove && B[r_][c_].charAt(1)-'p'==0 && Math.abs(r - r_) == 1 && Math.abs(c-c_) == 1)
+		  {
+			  int sign = ((B[r_][c_].charAt(0)-'w')==0)?-1:1;
+				if(isValid(r_+sign ,c_) &&!empty(r_+sign,c_))
+				{
+					  int index = Integer.parseInt(""+B[r_+sign][c_].charAt(2) );
+					  if(count%2 == 0 && blackPawns[index]==3)
+					  {
+					    B[r_+sign][c_] = "";
+					  }
+					  else if(count%2 == 1 && whitePawns[index]==3)
+					  {
+					    B[r_+sign][c_] = "";
+					  }
+				}
+		  }
+				
+      		// System.out.println(isPawnMove);
+      		// System.out.println(promotion(r_, c_));
+			if(isPawnMove && promotion(r_,c_))
+			{
+				// need to return 1
+				String p = (count%2 == 0)?"w":"b";
+				System.out.println("What do u want to promote to?");
+				System.out.println("q");
+				System.out.println("n");
+				System.out.println("r");
+				System.out.println("b");
+				//String promotedTo = input.nextLine();
+       			String originalPiece = B[r_][c_];
+       			int ind = Integer.parseInt(""+B[r_][c_].charAt(2));
+
+       			M.remove(originalPiece);
+       			if(count%2 == 0){whitePawns[ind] = -2; }
+       			else{blackPawns[ind] = -2;}
+
+       			//char promotedPiece = input.next().charAt(0);
+				//B[r_][c_] = p+(""+promotedPiece)+String.valueOf(count);
+				
+				moved.put(B[r_][c_], false);
+			}
+			
+
+			if(count%2 == 0)
+			{
+				for(int i = 0; i < blackPawns.length; i++)
+				{
+				  String piece = "bp" + String.valueOf(i);
+
+				  if(blackAlive.contains(piece) && blackPawns[i] == 3){blackPawns[i] = 2;}
+				  else if(!blackAlive.contains(piece)){blackPawns[i] = -1;}
+
+				}
+			}
+			
+			else
+			{
+				for(int i = 0; i < whitePawns.length; i++)
+				{
+				  String piece = "wp" + String.valueOf(i);
+				  if(whiteAlive.contains(piece) && whitePawns[i] == 3){whitePawns[i] = 2;}
+				  else if(!whiteAlive.contains(piece)){whitePawns[i] = -1;}
+				}
+			}
+			
+			M = new HashMap<String, Vector<Integer>>();
+			whiteAlive = new HashSet<String>();
+			blackAlive = new HashSet<String>();
+			for(int i = 0; i < B.length; i++)
+			{
+				for(int j = 0; j < B[0].length; j++)
+				{
+					if(!B[i][j].equals(""))
+					{
+						Vector<Integer> v = new Vector<Integer>();
+						v.add(i); v.add(j);
+						M.put(B[i][j], v);
+						if(B[i][j].charAt(0) - 'w' == 0)
+						{
+							whiteAlive.add(B[i][j]);
+						}
+						else
+						{
+							blackAlive.add(B[i][j]);
+						}
+					}
+				}
+			}
+			
+		
+		return 0;
 	}
 
 	
@@ -511,6 +665,8 @@ class Board{
 		/**Returns true if the piece occupied at x, y is in the board*/
 		return (x >= 0 && x < 8) && (y >= 0 && y < 8);
 	}
+	
+	
 
 	public boolean noCheck(String piece, int r_, int c_)
 	{
@@ -707,7 +863,18 @@ class Board{
 					// System.out.println(dy != 0 );
 					// System.out.println((filled(otherplayer, x+dy, y + dy)));
 					// System.out.println(dy);
-					boolean cond = isValid(x + dx, y + dy) && !filled(player, x+dx, y+dy);
+					boolean cond = isValid(x + dx, y + dy);
+					
+					if(dy != 0)
+					{
+						cond = cond && filled(otherplayer, x+dx, y+dy);
+					}
+					else if(dy == 0)
+					{
+						cond = cond && empty(x + dx, y + dy);
+					}
+					
+					
 
 					if(normal){cond = cond&& noCheck(piece, x+dx, y+dy);}
 					else{;}
