@@ -291,6 +291,7 @@ class chess extends JFrame implements ActionListener
 		}
 		else if(e.getSource() == load)
 		{
+			createGame();
 			loadGame();
 		}
 		else
@@ -387,7 +388,7 @@ class chess extends JFrame implements ActionListener
 		Date date = new Date();
 		saveName += dateFormat.format(date);
 
-		String turn = Integer.toString(count%2);
+		String turn = Integer.toString((count+1)%2);
 
 		try
 		{
