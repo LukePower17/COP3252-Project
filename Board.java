@@ -99,6 +99,7 @@ class Board{
 		}
 	}
 
+
 	public void display()
 	{
 		/**Prints the board to the screen*/
@@ -137,7 +138,7 @@ class Board{
 
 	public void play()
 	{
-		System.out.println("P called");
+		
 		int r, c;
 		int r_, c_;
 		Scanner input = new Scanner(System.in);
@@ -239,7 +240,7 @@ class Board{
 				moved.put(B[r_][c_], false);
 
 			}
-			display();
+			
 			
 
 			if(count%2 == 0)
@@ -287,7 +288,7 @@ class Board{
 				}
 			}
 
-
+			display();
 //			Iterator itr = M.entrySet().iterator();
 //			while(itr.hasNext())
 //			{
@@ -326,6 +327,12 @@ class Board{
 	public int playMove(int r, int c, int r_, int c_, int count)
 	{
 
+		if(empty(r, c)) {return -1;}
+		else
+		{
+			char p = (count%2 == 0)? 'w':'b';
+			if(B[r][c].charAt(0) - p != 0) {return -1;}
+		}
 		boolean isPawnMove = false;
 		
 		if(!(checkMate(0)||checkMate(1)))
@@ -437,6 +444,7 @@ class Board{
 					}
 				}
 			}
+			display();
 			
 		
 		return 0;
@@ -579,6 +587,7 @@ class Board{
 		return false;
 	}
 
+	
 
 
 	public boolean Check(int player)
@@ -659,6 +668,41 @@ class Board{
 		}
 		return new Vector<Vector<Integer>>();
 	}
+	
+	public boolean isValidChessMove(int r, int c, int r_, int c_, int player)
+	{
+		if(empty(r,c)) {return false;}
+		else
+		{
+			char p = B[r][c].charAt(0);
+			
+			if(player == 0) {if(p - 'w' != 0) {return false;}}
+			else if(player == 1) {if(p - 'b' != 0) {return false;}}
+			
+			Vector<Vector<Integer>> trajectory = getTrajectory(B[r][c]);
+			Iterator<Vector<Integer>> itr = trajectory.iterator();
+			
+			boolean hasCoordinates = false;
+			while(itr.hasNext())
+			{
+				Vector<Integer> cor = itr.next();
+				if((int)cor.get(0) == r_ && (int)cor.get(1) == c_) 
+				{
+					hasCoordinates = true;
+					break;
+				}
+				
+			}
+			
+			if(hasCoordinates && !empty(r_, c_))
+			{
+				if(B[r_][c_].charAt(1) - 'k' == 0) {return false;}
+				return true;
+			}
+			
+			return true;
+		}
+	}
 
 	public boolean isValid(int x, int y)
 	{
@@ -666,7 +710,45 @@ class Board{
 		return (x >= 0 && x < 8) && (y >= 0 && y < 8);
 	}
 	
-	
+	public boolean filled(int player, int r, int c)
+	{
+		/**Returns true if the piece occupied at r, c has the same color as player*/
+		char p = (player == 0)?'w':'b';
+
+		if(isValid(r, c) && !B[r][c].equals("") && B[r][c].charAt(0) - p == 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public boolean empty(int r, int c)
+	{
+		/**Returns true if the piece occupied at r, c is empty*/
+		return B[r][c].equals("");
+	}
+
+	public boolean promotion(int r_ , int c_)
+	{
+		//if(piece.charAt(1) - 'p' == 0)
+		//{
+      String piece = B[r_][c_];
+		  int x = r_;
+			char p = piece.charAt(0);
+			if(p - 'w' == 0)
+			{
+				if(x == 7)
+					return true;
+			}
+			else
+			{
+				if(x == 0)
+					return true;
+			}
+		//}
+		return false;
+	}
+
 
 	public boolean noCheck(String piece, int r_, int c_)
 	{
@@ -763,44 +845,6 @@ class Board{
 		return false;
 	}
 
-	public boolean filled(int player, int r, int c)
-	{
-		/**Returns true if the piece occupied at r, c has the same color as player*/
-		char p = (player == 0)?'w':'b';
-
-		if(isValid(r, c) && !B[r][c].equals("") && B[r][c].charAt(0) - p == 0)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	public boolean empty(int r, int c)
-	{
-		/**Returns true if the piece occupied at r, c is empty*/
-		return B[r][c].equals("");
-	}
-
-	public boolean promotion(int r_ , int c_)
-	{
-		//if(piece.charAt(1) - 'p' == 0)
-		//{
-      String piece = B[r_][c_];
-		  int x = r_;
-			char p = piece.charAt(0);
-			if(p - 'w' == 0)
-			{
-				if(x == 7)
-					return true;
-			}
-			else
-			{
-				if(x == 0)
-					return true;
-			}
-		//}
-		return false;
-	}
 
 	public Vector<Vector<Integer>> getPawnTrajectory(String piece, boolean normal)
 	{
