@@ -114,6 +114,12 @@ class chess extends JFrame
 		JPanel controls = new JPanel();
 		controls.setLayout(new GridLayout(8, 8,0,0));
 
+		try {
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
 
 		for(int i = 0; i < 8; i++)//i is rows
 		{
@@ -273,9 +279,7 @@ class chess extends JFrame
 		}
 		public void createGame()
 		{
-
-
-
+			board = new Board();
 		}
 		public void setBoard(String str)
 		{
@@ -290,6 +294,6 @@ class chess extends JFrame
 			// }
 
 		}
-
+		//to get the players move do: this.count%2
 
 	}
