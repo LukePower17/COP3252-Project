@@ -36,6 +36,7 @@ class chess extends JFrame implements ActionListener
 
 	private Board board;
 
+	private String moves;
 
 	private JMenuBar menuBar;
 	private JMenuItem load, create, save;
@@ -80,6 +81,7 @@ class chess extends JFrame implements ActionListener
 		BKnight = new ImageIcon("./Imgs/black_knight.png");
 		WKnight = new ImageIcon("./Imgs/white_knight.png");
 
+		this.moves = "";
 
 		this.clicked = 0;
 
@@ -159,23 +161,26 @@ class chess extends JFrame implements ActionListener
 
 	public boolean play()
 	{
+		boolean notDraworLose = !(this.board.checkMate(0) || this.board.checkMate(1) || this.board.staleMate(0) ||this.board.staleMate(1) );
 
-		if(isValid(this.r, this.c) && isValid(this.r_, this.c_))
+		System.out.println(notDraworLose);
+		if(notDraworLose && isValid(this.r, this.c) && isValid(this.r_, this.c_))
 		{
 			System.out.println(this.r +" "+this.r_ + " "+this.c +" "+ this.c_);
 
 			if(this.board.isValidChessMove(this.r, this.c, this.r_, this.c_, this.count%2))
 			{
 				int result = -3;
+				// need to return winner 
 
-				if(!(this.board.checkMate(0) || this.board.checkMate(1)))
-				{
-					 result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
-					 if(result == 0 || result == -2)
-					 {
-						 this.count += 1;
-					 }
-				}
+				 result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
+				 if(result == 0 || result == -2)
+				 {
+				 	String move = ""+ String.valueOf(r) + "," +  String.valueOf(c) + "," +  String.valueOf(r_) + "," + String.valueOf(c_) + "\n";
+					this.moves += move;
+					 this.count += 1;
+				 }
+			
 
 				if(result == 0)
 				{
@@ -188,7 +193,31 @@ class chess extends JFrame implements ActionListener
 			}
 			return false;
 		}
-		return false;
+		else
+		{
+			if(this.board.checkMate(0)){
+				System.out.println("Black has Won !!!!");
+			}
+			else if(this.board.checkMate(1)){
+				System.out.println("White has Won !!!!");
+			}
+
+			else
+			{	
+				if(this.board.staleMate(0))
+				{
+					System.out.println("Draw!!!");
+				}
+
+				else if(this.board.staleMate(1))
+				{
+					System.out.println("Draw!!!");
+				}
+			}
+			return false;
+		}
+
+
 	}
 
 	public void setBoard()
@@ -284,19 +313,35 @@ class chess extends JFrame implements ActionListener
 		if(e.getSource() == save)
 		{
 			saveGame();
+			setBoard();
+			this.board.display();
+			super.setVisible(false);
+			super.setVisible(true);
+			resetColors();
 		}
 		else if(e.getSource() == create)
 		{
 			createGame();
+			setBoard();
+			resetColors();
+			setBoard();
+			this.board.display();
+			super.setVisible(false);
+			super.setVisible(true);
 		}
 		else if(e.getSource() == load)
 		{
-			createGame();
 			loadGame();
+			setBoard();
+			super.setVisible(false);
+			
+			this.board.display();
+			resetColors();
+			super.setVisible(true);
+
 		}
 		else
 		{
-			System.out.println("clicked " + this.clicked);
 			for(int i = 0; i < b.length; i++)
 			{
 				for(int j = 0; j < b[0].length; j++)
@@ -338,7 +383,6 @@ class chess extends JFrame implements ActionListener
 			else
 			{
 				this.clicked = -1;
-				//setBoard();
 			}
 		}
 		if(clicked == 0)
@@ -379,10 +423,9 @@ class chess extends JFrame implements ActionListener
 		}
 
 	}
-////////////////////
+
 	public void saveGame()
 	{
-		System.out.println("inside saveGame");
 		String saveName = "chessGame_";
 		SimpleDateFormat dateFormat = new SimpleDateFormat("MM_dd_yyy_HH_mm_ss");
 		Date date = new Date();
@@ -393,15 +436,11 @@ class chess extends JFrame implements ActionListener
 		try
 		{
 				FileWriter myWriter = new FileWriter(saveName);
-				for(int i = 0; i < 8; i++)//i is rows
-				{
-					for(int j = 0; j < 8; j++)
-					{
-						myWriter.write(board.B[i][j] + ",");
-					}
-				}
-				myWriter.write(turn);
+				myWriter.write(String.valueOf((count + 1)%2) + "\n");
+				myWriter.write(this.moves);
 				myWriter.close();
+
+				System.out.println(this.moves);
 		}
 		catch (IOException e)
 		{
@@ -410,18 +449,18 @@ class chess extends JFrame implements ActionListener
 		}
 	}
 
-///////////////////
 
 	public void loadGame()
 	{
 		try
 		{
 
+
 			FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
 			dialog.setMode(FileDialog.LOAD);
 			dialog.setVisible(true);
 			File file = new File( dialog.getFile() );
-			//System.out.println(file + " chosen.");
+		
 			FileReader fr = new FileReader(file);
 
 			String piece = "";
@@ -430,82 +469,71 @@ class chess extends JFrame implements ActionListener
 			int column = 0;
 			int turn;
 			this.board = new Board();
-			while ((C = fr.read()) != -1)
-			{
-				if(C-',' == 0)
-				{
-					// System.out.println(piece);
-					System.out.println(row + " " + column);
-					this.board.B[row][column] = piece;
-					column++;
-				//	this.board.display();
-					piece = "";
-				}
-				else
-				{
-					piece += (char)C;
-				}
-				if(column == 8)
-				{
-					row++;
-					column = 0;
-				}
-				if(row == 8)
+			// turn
+			C = fr.read();
+			turn = Integer.parseInt("" + (char)C);
+
+			this.count = 0;
+			int r, c, r_, c_;
+			
+			r = -1; c = -1; r_= -1; c_ = -1;
+			
+			this.board = new Board();
+			while ((C = fr.read()) != -1){
+				System.out.println((char)C);
+				if((char)C - '\n' == 0)
 				{
 					C = fr.read();
-					piece += (char)C;
-					turn = Integer.parseInt(piece);
-					this.count = turn;
-					System.out.println(turn);
-					break;
+					if(r == -1)
+					{
+						r = Integer.parseInt("" + (char)C) ;
+					}
 				}
-			}
+				else if((char)C - ',' == 0)
+				{
 
-			setBoard();
-			//actionPerformed(null);
-			this.board.display();
-			resetColors();
-		//	System.out.println(loadedGame);
-			//then set the board using fuction call:
+					if(c == -1)
+					{
+						C = fr.read();
+						c = Integer.parseInt(""+(char)C);
+					}
+					else if(r_ == -1)
+					{
+						C = fr.read();
+						r_ = Integer.parseInt(""+(char)C);
+					}
+					else if(c_ == -1)
+					{
+						C = fr.read();
+						c_ = Integer.parseInt(""+(char)C);
+					}
+				}
 
+				if(!(r == -1 || r_ == -1 || c== -1 || c_ == -1))
+				{
+		
+					this.r = r;
+					this.c = c;
+					this.r_ = r_;
+					this.c_ = c_;
+					play();
+					r = -1; c = -1; r_ = -1; c_ = -1;
+				}
+			}		
 		}
 		catch(Exception ex)
 		{
-
+			;
 		}
 
 	}
 
-//////////////////
+
 	public void createGame()
 	{
 		this.board = new Board();
 		this.count = 0;
-		setBoard();
-		resetColors();
+		this.moves = "";
 	}
 
-/////////////////
-	// public void loadBoard(String str)
-	// {
-	// 	String [][] test;
-	// 	String [] token;
-	// 	int count = 0;
-	// 	for(int i = 0; i < 8; i++)//i is rows
-	// 	{
-	// 		for(int j = 0; j < 8; j++)
-	// 		{
-	// 			if(str.charAt(count) == ',')
-	// 			{
-	//
-	// 				continue;
-	// 			}
-	// 			board.B[i][j] += str.charAt(count);
-	// 		}
-	// 	}
-	//
-	// }
-	//to get the players move do: this.count%2
-
-/////////////////
 }
