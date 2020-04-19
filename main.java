@@ -53,31 +53,6 @@ class chess extends JFrame implements ActionListener
 
 	private int count;
 
-///////////////////////////////
-
-	class MenuActionListener implements ActionListener
-	{
-		public void actionPerformed(ActionEvent e)
-		{
-			loadGame();
-		}
-	}
-
-	class MenuActionListenerSave implements ActionListener
-	{
-		public void actionPerformed(ActionEvent e)
-		{
-			saveGame();
-		}
-	}
-	class MenuActionListenerCreate implements ActionListener
-	{
-		public void actionPerformed(ActionEvent e)
-		{
-			createGame();
-		}
-	}
-
 /////////////////////
 	public chess()
 	{
@@ -122,11 +97,11 @@ class chess extends JFrame implements ActionListener
 		menu = new JMenu("File");
 		theme = new JMenu("Theme");
 		save = new JMenuItem("Save game");
-		save.addActionListener(new MenuActionListenerSave());
+		save.addActionListener(this);
 		create = new JMenuItem("Create new game");
-		create.addActionListener(new MenuActionListenerCreate());
+		create.addActionListener(this);
 		load = new JMenuItem("Load game");
-		load.addActionListener(new MenuActionListener());
+		load.addActionListener(this);
 		light = new JRadioButtonMenuItem("Light theme");
 		Group = new ButtonGroup();
 		theme.add(light);
@@ -306,32 +281,46 @@ class chess extends JFrame implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
-
-		System.out.println("clicked " + this.clicked);
-		for(int i = 0; i < b.length; i++)
+		if(e.getSource() == save)
 		{
-			for(int j = 0; j < b[0].length; j++)
+			saveGame();
+		}
+		else if(e.getSource() == create)
+		{
+			createGame();
+		}
+		else if(e.getSource() == load)
+		{
+			loadGame();
+		}
+		else
+		{
+			System.out.println("clicked " + this.clicked);
+			for(int i = 0; i < b.length; i++)
 			{
-
-				if(e.getSource() == b[i][j])
+				for(int j = 0; j < b[0].length; j++)
 				{
-					if(this.clicked == 0 || this.clicked == -1)
+
+					if(e.getSource() == b[i][j])
 					{
-						this.clicked = 0;
-						this.r = i;
-						this.c = j;
+						if(this.clicked == 0 || this.clicked == -1)
+						{
+							this.clicked = 0;
+							this.r = i;
+							this.c = j;
 
-						this.r_ = -1;
-						this.c_ = -1;
+							this.r_ = -1;
+							this.c_ = -1;
 
-						this.clicked += 1;
-					}
-					else if(this.clicked == 1)
-					{
-						this.r_ = i;
-						this.c_ = j;
-						this.clicked = 0;
+							this.clicked += 1;
+						}
+						else if(this.clicked == 1)
+						{
+							this.r_ = i;
+							this.c_ = j;
+							this.clicked = 0;
 
+						}
 					}
 				}
 			}
@@ -444,29 +433,35 @@ class chess extends JFrame implements ActionListener
 			{
 				if(C-',' == 0)
 				{
-					System.out.println(piece);
+					// System.out.println(piece);
+					System.out.println(row + " " + column);
 					this.board.B[row][column] = piece;
 					column++;
-					this.board.display();
+				//	this.board.display();
 					piece = "";
 				}
 				else
 				{
 					piece += (char)C;
 				}
-				if(column == 7)
+				if(column == 8)
 				{
 					row++;
 					column = 0;
 				}
 				if(row == 8)
 				{
+					C = fr.read();
+					piece += (char)C;
 					turn = Integer.parseInt(piece);
+					this.count = turn;
 					System.out.println(turn);
 					break;
 				}
 			}
+
 			setBoard();
+			//actionPerformed(null);
 			this.board.display();
 			resetColors();
 		//	System.out.println(loadedGame);
@@ -483,7 +478,8 @@ class chess extends JFrame implements ActionListener
 //////////////////
 	public void createGame()
 	{
-		board = new Board();
+		this.board = new Board();
+		this.count = 0;
 		setBoard();
 		resetColors();
 	}
