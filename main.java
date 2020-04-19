@@ -398,6 +398,8 @@ class chess extends JFrame implements ActionListener
 		Date date = new Date();
 		saveName += dateFormat.format(date);
 
+		String turn = Integer.toString(count%2);
+
 		try
 		{
 				FileWriter myWriter = new FileWriter(saveName);
@@ -408,6 +410,7 @@ class chess extends JFrame implements ActionListener
 						myWriter.write(board.B[i][j] + ",");
 					}
 				}
+				myWriter.write(turn);
 				myWriter.close();
 		}
 		catch (IOException e)
@@ -429,16 +432,46 @@ class chess extends JFrame implements ActionListener
 			dialog.setVisible(true);
 			File file = new File( dialog.getFile() );
 			//System.out.println(file + " chosen.");
-			BufferedReader br = new BufferedReader(new FileReader(file));
+			FileReader fr = new FileReader(file);
 
-			String st;
-			while ((st = br.readLine()) != null)
+			String piece = "";
+			int C;
+			int row = 0;
+			int column = 0;
+			int turn;
+			this.board = new Board();
+			while ((C = fr.read()) != -1)
 			{
-				loadedGame += st;
+				if(C-',' == 0)
+				{
+					System.out.println(piece);
+					this.board.B[row][column] = piece;
+					column++;
+					this.board.display();
+					piece = "";
+				}
+				else
+				{
+					piece += (char)C;
+				}
+				if(column == 7)
+				{
+					row++;
+					column = 0;
+				}
+				if(row == 8)
+				{
+					turn = Integer.parseInt(piece);
+					System.out.println(turn);
+					break;
+				}
 			}
-			System.out.println(loadedGame);
+			setBoard();
+			this.board.display();
+			resetColors();
+		//	System.out.println(loadedGame);
 			//then set the board using fuction call:
-			setBoard(loadedGame);
+
 		}
 		catch(Exception ex)
 		{
@@ -456,19 +489,25 @@ class chess extends JFrame implements ActionListener
 	}
 
 /////////////////
-	public void setBoard(String str)
-	{
-		String [][] test;
-		String [] token;
-		// for(int i = 0; i < 8; i++)//i is rows
-		// {
-		// 	for(int j = 0; j < 8; j++)
-		// 	{
-		// 		token[k] = str.split(",");
-		// 	}
-		// }
-
-	}
+	// public void loadBoard(String str)
+	// {
+	// 	String [][] test;
+	// 	String [] token;
+	// 	int count = 0;
+	// 	for(int i = 0; i < 8; i++)//i is rows
+	// 	{
+	// 		for(int j = 0; j < 8; j++)
+	// 		{
+	// 			if(str.charAt(count) == ',')
+	// 			{
+	//
+	// 				continue;
+	// 			}
+	// 			board.B[i][j] += str.charAt(count);
+	// 		}
+	// 	}
+	//
+	// }
 	//to get the players move do: this.count%2
 
 /////////////////
