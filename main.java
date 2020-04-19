@@ -9,7 +9,9 @@ import javax.swing.JFrame;
 import javax.swing.*;
 import java.lang.*;
 import java.util.*;
-
+import java.io.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class main
 {
@@ -27,33 +29,57 @@ class chess extends JFrame implements ActionListener
 
 
 	private square[][]b;
-	
-	private Icon WPawn;
-	private Icon BPawn;
-	private Icon WBish;
-	private Icon BBish;
-	private Icon WRook;
-	private Icon BRook;
-	private Icon WQueen;
-	private Icon BQueen;
-	private Icon BKing;
-	private Icon WKing;
-	private Icon BKnight;
-	private Icon WKnight;
+
+	private Icon WPawn, WBish, WRook, WQueen, WKing, WKnight;
+	private Icon BPawn, BBish, BRook, BQueen, BKing, BKnight;
 
 
 	private Board board;
-	
+
+
+	private JMenuBar menuBar;
+	private JMenuItem load, create, save;
+	private JMenu menu, theme;
+	private JRadioButtonMenuItem dark, light;
+	private ButtonGroup Group;
+	private File loadedFile;
+	private String loadedGame ="";
+
 
 	private int r,c;
 	private int r_, c_;
-	
+
 	private int clicked;
-	
+
 	private int count;
-	
-	
-	public chess() 
+
+///////////////////////////////
+
+	class MenuActionListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			loadGame();
+		}
+	}
+
+	class MenuActionListenerSave implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			saveGame();
+		}
+	}
+	class MenuActionListenerCreate implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			createGame();
+		}
+	}
+
+/////////////////////
+	public chess()
 	{
 		super("Chess");
 		try {
@@ -62,10 +88,10 @@ class chess extends JFrame implements ActionListener
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		
-		
+
+
 		//setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("./Imgs/white_pawn.png")));
-		
+
 		WPawn = new ImageIcon("./Imgs/white_pawn.png");
 		BPawn = new ImageIcon("./Imgs/black_pawn.png");
 		WBish = new ImageIcon("./Imgs/white_bishop.png");
@@ -79,36 +105,62 @@ class chess extends JFrame implements ActionListener
 		BKnight = new ImageIcon("./Imgs/black_knight.png");
 		WKnight = new ImageIcon("./Imgs/white_knight.png");
 
-		
+
 		this.clicked = 0;
-		
+
 		this.b = new square[8][8];
-		
+
 		this.board = new Board();
-		
+
 
 		super.setVisible(true);
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		super.setSize(720, 720);
+//////////////////////////////
 
+		menuBar = new JMenuBar();
+		menu = new JMenu("File");
+		theme = new JMenu("Theme");
+		save = new JMenuItem("Save game");
+		save.addActionListener(new MenuActionListenerSave());
+		create = new JMenuItem("Create new game");
+		create.addActionListener(new MenuActionListenerCreate());
+		load = new JMenuItem("Load game");
+		load.addActionListener(new MenuActionListener());
+		light = new JRadioButtonMenuItem("Light theme");
+		Group = new ButtonGroup();
+		theme.add(light);
+		dark = new JRadioButtonMenuItem("Dark theme", true);
+		theme.add(dark);
+		Group.add(light);
+		Group.add(dark);
+		menu.add(create);
+		menu.add(save);
+		menu.add(load);
+		menuBar.add(menu);
+		menuBar.add(theme);
+		this.setJMenuBar(menuBar);
+		boolean isDarkSelected = dark.isSelected();
+
+/////////////
 		JPanel controls = new JPanel();
 		controls.setLayout(new GridLayout(8, 8,2,2));
-	
+
 		for(int i = 0; i < 8; i++)
 		{
 			for(int j = 0; j < 8; j++)
 			{
 
-				
+
 				Color white = new Color(238, 238, 210);
 				//Color black = new Color(10, 10, 10,150);
 				Color black = new Color(118, 115, 110,150);
 				Color green = new Color(0, 200,0,  150);
 				Color red = new Color(225, 0, 0, 150);
-				
-				
+
+
 				if(j%2 == (i%2)){
-					
+
 					b[i][j] = new square(black, green, red, Color.WHITE);
 				}
 				else
@@ -122,41 +174,41 @@ class chess extends JFrame implements ActionListener
 		}
 
 		super.add(controls);
-		
+
 	}
 
 	public boolean isValid(int r, int c)
 	{
 		return (r >= 0 && r < 8) && (c >= 0 && c < 8);
 	}
-	
+
 	public boolean play()
 	{
-		
-		if(isValid(this.r, this.c) && isValid(this.r_, this.c_)) 
+
+		if(isValid(this.r, this.c) && isValid(this.r_, this.c_))
 		{
 			System.out.println(this.r +" "+this.r_ + " "+this.c +" "+ this.c_);
-			
+
 			if(this.board.isValidChessMove(this.r, this.c, this.r_, this.c_, this.count%2))
 			{
 				int result = -3;
-				
+
 				if(!(this.board.checkMate(0) || this.board.checkMate(1)))
 				{
 					 result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
-					 if(result == 0 || result == -2) 
+					 if(result == 0 || result == -2)
 					 {
 						 this.count += 1;
 					 }
 				}
-				
-				if(result == 0) 
+
+				if(result == 0)
 				{
 					setBoard();
 					resetColors(this.r, this.c, this.r_, this.c_);
 					return true;
 				}
-				
+
 				return false;
 			}
 			return false;
@@ -172,7 +224,7 @@ class chess extends JFrame implements ActionListener
 			for(int j = 0; j < 8; j++)
 			{
 				if(board.B[i][j].equals(""))	//empty spot
-				{	
+				{
 					b[i][j].setIcon(null);
 				}
 
@@ -215,35 +267,35 @@ class chess extends JFrame implements ActionListener
 	public void highlightTrajectory(int x, int y)
 	{
 		char player = (this.count%2 == 0)?'w':'b';
-		
+
 		if(!(this.board.B[x][y].equals("") == false && this.board.B[x][y].charAt(0) - player == 0))
 		{
 			return;
 		}
-		
+
 		Vector<Vector<Integer>> v = this.board.getTrajectory(this.board.B[x][y]);
 		Iterator <Vector<Integer>> itr =  v.iterator();
-		
+
 		System.out.println(this.count);
-		
+
 		System.out.println("Trajectory of " + this.board.B[x][y]);
 		System.out.println("-----------------");
-		
+
 		while(itr.hasNext())
 		{
 			Vector<Integer> C = itr.next();
 			int i = C.get(0);
 			int j = C.get(1);
-			
+
 			System.out.println(i + " " + j);
-		
+
 			char p = (this.count%2 == 0)?'w': 'b';
-			
+
 			if(this.board.empty(i, j))
 			{
 				this.b[i][j].activeMode();
 			}
-			
+
 			else if(this.board.B[i][j].charAt(0) - p != 0)
 			{
 				this.b[i][j].dangerMode();
@@ -251,7 +303,7 @@ class chess extends JFrame implements ActionListener
 		}
 		System.out.println("-----------------");
 	}
-	
+
 	public void actionPerformed(ActionEvent e)
 	{
 
@@ -268,10 +320,10 @@ class chess extends JFrame implements ActionListener
 						this.clicked = 0;
 						this.r = i;
 						this.c = j;
-						
+
 						this.r_ = -1;
 						this.c_ = -1;
-						
+
 						this.clicked += 1;
 					}
 					else if(this.clicked == 1)
@@ -279,16 +331,16 @@ class chess extends JFrame implements ActionListener
 						this.r_ = i;
 						this.c_ = j;
 						this.clicked = 0;
-						
+
 					}
 				}
 			}
 		}
 
-		if(clicked == 1) 
+		if(clicked == 1)
 		{
 			char p = (this.count%2 == 0)? 'w':'b';
-			
+
 			if(this.board.B[this.r][this.c].equals("") == false && this.board.B[this.r][this.c].charAt(0) - p == 0)
 			{
 				this.highlightTrajectory(this.r, this.c);
@@ -314,7 +366,7 @@ class chess extends JFrame implements ActionListener
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				this.b[i][j].normalMode();
-			
+
 			}
 		}
 
@@ -337,5 +389,87 @@ class chess extends JFrame implements ActionListener
 		}
 
 	}
+////////////////////
+	public void saveGame()
+	{
+		System.out.println("inside saveGame");
+		String saveName = "chessGame_";
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM_dd_yyy_HH_mm_ss");
+		Date date = new Date();
+		saveName += dateFormat.format(date);
 
+		try
+		{
+				FileWriter myWriter = new FileWriter(saveName);
+				for(int i = 0; i < 8; i++)//i is rows
+				{
+					for(int j = 0; j < 8; j++)
+					{
+						myWriter.write(board.B[i][j] + ",");
+					}
+				}
+				myWriter.close();
+		}
+		catch (IOException e)
+		{
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
+	}
+
+///////////////////
+
+	public void loadGame()
+	{
+		try
+		{
+
+			FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
+			dialog.setMode(FileDialog.LOAD);
+			dialog.setVisible(true);
+			File file = new File( dialog.getFile() );
+			//System.out.println(file + " chosen.");
+			BufferedReader br = new BufferedReader(new FileReader(file));
+
+			String st;
+			while ((st = br.readLine()) != null)
+			{
+				loadedGame += st;
+			}
+			System.out.println(loadedGame);
+			//then set the board using fuction call:
+			setBoard(loadedGame);
+		}
+		catch(Exception ex)
+		{
+
+		}
+
+	}
+
+//////////////////
+	public void createGame()
+	{
+		board = new Board();
+		setBoard();
+		resetColors();
+	}
+
+/////////////////
+	public void setBoard(String str)
+	{
+		String [][] test;
+		String [] token;
+		// for(int i = 0; i < 8; i++)//i is rows
+		// {
+		// 	for(int j = 0; j < 8; j++)
+		// 	{
+		// 		token[k] = str.split(",");
+		// 	}
+		// }
+
+	}
+	//to get the players move do: this.count%2
+
+/////////////////
 }
