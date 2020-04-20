@@ -139,6 +139,7 @@ class Board{
 	public void play()
 	{
 		
+
 		int r, c;
 		int r_, c_;
 		Scanner input = new Scanner(System.in);
@@ -149,16 +150,16 @@ class Board{
 		{
 			//
 
-			System.out.println((checkMate(0)));
-			System.out.println(checkMate(1));
+			//System.out.println((checkMate(0)));
+			//System.out.println(checkMate(1));
 			isPawnMove = false;
 			if(count%2 == 0)
 			{
-				System.out.println("White to play");
+				//System.out.println("White to play");
 			}
 			else
 			{
-				System.out.println("Black to play");
+				//System.out.println("Black to play");
 			}
 
 			char player = (count%2 == 0)?'w':'b';
@@ -167,9 +168,9 @@ class Board{
 			
 			do{
 				do{
-					System.out.println("row: ");
+					//System.out.println("row: ");
 					r = input.nextInt();
-					System.out.println("col: ");
+					//System.out.println("col: ");
 					c = input.nextInt();
 
 					r -= 1;c -= 1;
@@ -177,9 +178,9 @@ class Board{
 				}while(!filled(count%2, r, c));
 
 				do{
-					System.out.println("to row:");
+					//System.out.println("to row:");
 					r_ = input.nextInt();
-					System.out.println("to col:");
+					//System.out.println("to col:");
 					c_ = input.nextInt();
 
 					r_ -= 1; c_ -= 1;
@@ -192,7 +193,7 @@ class Board{
 				{
 					isPawnMove = true;
 				}
-				System.out.println(successfulMove);
+				//System.out.println(successfulMove);
 			}while(!successfulMove);
 
 
@@ -215,16 +216,16 @@ class Board{
 	        }
 	      }
 
-      		// System.out.println(isPawnMove);
-      		// System.out.println(promotion(r_, c_));
+      		// //System.out.println(isPawnMove);
+      		// //System.out.println(promotion(r_, c_));
 			if(isPawnMove && promotion(r_,c_))
 			{
 				String p = (count%2 == 0)?"w":"b";
-				System.out.println("What do u want to promote to?");
-				System.out.println("q");
-				System.out.println("n");
-				System.out.println("r");
-				System.out.println("b");
+				//System.out.println("What do u want to promote to?");
+				//System.out.println("q");
+				//System.out.println("n");
+				//System.out.println("r");
+				//System.out.println("b");
 				//String promotedTo = input.nextLine();
        			String originalPiece = B[r_][c_];
        			int ind = Integer.parseInt(""+B[r_][c_].charAt(2));
@@ -298,23 +299,23 @@ class Board{
 //				
 //
 //				Vector<Vector<Integer>> trajectory = getTrajectory((String)me.getKey());
-//				System.out.println((String)me.getKey()+" "+(int)cordinates.get(0) + " " + (int)cordinates.get(1));
+//				//System.out.println((String)me.getKey()+" "+(int)cordinates.get(0) + " " + (int)cordinates.get(1));
 //				
 //				Iterator<Vector<Integer>> I = trajectory.iterator();
 //				while(I.hasNext())
 //				{
 //					Vector<Integer> pos = I.next();
-//					System.out.println((int)pos.get(0)+" "+(int)pos.get(1));
+//					//System.out.println((int)pos.get(0)+" "+(int)pos.get(1));
 //				}
 //			}
 
 			// for(int i = 0; i < 8; i++)
 			// {
-			// 	System.out.println(whitePawns[i]);
+			// 	//System.out.println(whitePawns[i]);
 			// }
 			// for(int i = 0; i < 8; i++)
 			// {
-			// 	System.out.println(blackPawns[i]);
+			// 	//System.out.println(blackPawns[i]);
 			// }
 
 			count++;
@@ -326,10 +327,12 @@ class Board{
 	// -1 if move not valid
 	public int playMove(int r, int c, int r_, int c_, int count)
 	{
+		//System.out.println("In playMove");
+		this.count = count;
 		System.out.println("CheckMate(0) " + checkMate(0));
 		System.out.println("CheckMate(1) " + checkMate(1));
 		System.out.println("staleMate(0) " + staleMate(0));
-		System.out.println("staleMate(0) " + staleMate(0));
+		System.out.println("staleMate(1) " + staleMate(1));
 
 		if(empty(r, c)) {return -1;}
 		else
@@ -381,8 +384,8 @@ class Board{
 			}
 		}
 				
-      		// System.out.println(isPawnMove);
-      		// System.out.println(promotion(r_, c_));
+      		// //System.out.println(isPawnMove);
+      		// //System.out.println(promotion(r_, c_));
 		if(isPawnMove && promotion(r_,c_))
 		{
 			// need to return 1
@@ -429,7 +432,8 @@ class Board{
 			}
 		}
 		
-		M = new HashMap<String, Vector<Integer>>();
+		//updateM();
+		this.M = new HashMap<String, Vector<Integer>>();
 		whiteAlive = new HashSet<String>();
 		blackAlive = new HashSet<String>();
 		for(int i = 0; i < B.length; i++)
@@ -440,7 +444,7 @@ class Board{
 				{
 					Vector<Integer> v = new Vector<Integer>();
 					v.add(i); v.add(j);
-					M.put(B[i][j], v);
+					this.M.put(B[i][j], v);
 					if(B[i][j].charAt(0) - 'w' == 0)
 					{
 						whiteAlive.add(B[i][j]);
@@ -454,10 +458,27 @@ class Board{
 		}
 		display();
 			
-		
+		//System.out.println("Out of playMove");
 		return 0;
 	}
 
+	// public void updateM()
+	// {
+	// 	this.M = new HashMap<String, Vector<Integer>>();
+		
+	// 	for(int i = 0; i < B.length; i++)
+	// 	{
+	// 		for(int j = 0; j < B[0].length; j++)
+	// 		{
+	// 			if(!B[i][j].equals(""))
+	// 			{
+	// 				Vector<Integer> v = new Vector<Integer>();
+	// 				v.add(i); v.add(j);
+	// 				this.M.put(B[i][j], v);
+	// 			}
+	// 		}
+	// 	}
+	// }
 	
 	
 	
@@ -465,7 +486,9 @@ class Board{
 	{
 		/**Returns true if it is possible to move piece from (r, c) to (r_, c_)*/
 		
+		System.out.println("In movePiece");
 		String piece = B[r][c];
+
 
 		int player = (B[r][c].charAt(0) - 'w' == 0)?0:1;
 
@@ -473,28 +496,33 @@ class Board{
 
 		boolean isKing = (B[r][c].charAt(1) - 'k' == 0);
 
-		
+		System.out.println("PIECE: " + piece);
+		System.out.println("PLAYER: " + player);
+		System.out.println("IS_KING: " + isKing);
+
 		Vector<Vector<Integer>> trajectory = getTrajectory(B[r][c]);
 
 		Iterator<Vector<Integer>> itr = trajectory.iterator();
 
+		System.out.println("---/-/-/--/-/-/-/-/--/-/-/-/-/-/--/-/-/-/--//-/--/-/");
 		while(itr.hasNext())
 		{
 			Vector<Integer> cor = itr.next();
-      		
 			
+			System.out.println((int)cor.get(0) + " " + (int)cor.get(1));
 			if((int)cor.get(0) == r_ && (int)cor.get(1) == c_)
 			{
 				
+				System.out.println("Is valid to move");
 				Boolean m = moved.get(piece);
 
-				if(!isKing)
-				{
+				// if(!isKing)
+				// {
 					B[r_][c_] = B[r][c];
 					B[r][c] = "";
-				}
+				// }
 				// Castling
-				else
+				if(isKing)
 				{
 					if(m == false && isKing && Math.abs(c - c_) == 2 && noCheck(B[r][c], r, c))
 					{
@@ -538,9 +566,11 @@ class Board{
 						{blackPawns[index] = 1;}
 					}
 				}
+				//System.out.println("Out of movePiece");
 				return true;
 			}
 		}
+		//System.out.println("Out of movePiece");
 		return false;
 	}
 
@@ -557,54 +587,61 @@ class Board{
 
 	public boolean staleMate(int player)
 	{
-		if(!Check(player))
+		//System.out.println("In staleMate");
+		if(this.count%2 == player && !Check(player))
 	    {
-	  //   	System.out.println(Check(player));
-  	// 		int x = 0;
-  	// 		int y = 0;
-  	// 		Vector<Integer> Pos;
-  	// 		String king = "wk";
-  	// 		Iterator<String> Alive;
+	    	////System.out.println("In the first if statement");
+	    	Iterator<String> itr = whiteAlive.iterator();
 
-		 //    Pos = M.get("wk");
-		 //    x = (int)Pos.get(0);
-		 //    y = (int)Pos.get(1);
-			// Alive = whiteAlive.iterator();
-		
-  	// 		if(player == 1)
-  	// 		{
-  	// 		    Pos = M.get("bk");
-  	// 		    x = (int)Pos.get(0);
-  	// 		    y = (int)Pos.get(1);
-  	// 		    king = "bk";
-  	// 		    Alive = blackAlive.iterator();
-  	// 		}
+	    	HashSet<String >CopyAlive = new HashSet<String>();
 
-  	// 		// we iterate through all the pieces and check for possible capture
-			// while(Alive.hasNext())
-			// {
-			// 	String piece = Alive.next();
-			// 	Vector<Vector<Integer>> trajectory = getTrajectory(piece);
-				
-			// 	if(trajectory.size() > 0)
-			// 	{
-			// 		return false;
-			// 	}
-			// }
+
+    	
+	    	if(player == 1)
+	    	{
+	    		////System.out.println("Blacks turn");
+	    		itr = blackAlive.iterator();
+	    	}
+	    	//else{//System.out.println("Whites turn");}
+
+
+    		while(itr.hasNext())
+    		{
+    			CopyAlive.add(itr.next());
+    			
+    		}
+
+    		itr = CopyAlive.iterator();
+
+    		while(itr.hasNext()){
+    			String piece = itr.next();
+    			////System.out.println("In the itr loop");
+    			//
+    			////System.out.println("piece " + piece);
+    			Vector<Vector<Integer>> trajectory = getTrajectory(piece);
+
+    			if(trajectory.size() > 0)
+    			{
+    				////System.out.println("Out of staleMate");
+    				return false;
+    			}
+    		}
+    		////System.out.println("Out of staleMate");
 			return true;
 		}
 
+		////System.out.println("Out of staleMate");
 		return false;
 	}
 
 	public boolean checkMate(int player)
 	{
-
+		////System.out.println("In checkMate");
 		int counter = 0;
 		
 	    if(Check(player))
 	    {
-	    	System.out.println(Check(player));
+	    	//System.out.println(Check(player));
   			int x = 0;
   			int y = 0;
   			Vector<Integer> Pos;
@@ -626,6 +663,16 @@ class Board{
   			    Alive = blackAlive.iterator();
   			}
 
+
+  			HashSet<String> CopyAlive = new HashSet<String>();
+
+  			while(Alive.hasNext())
+  			{
+  				CopyAlive.add(Alive.next());
+  			}
+
+
+  			Alive = CopyAlive.iterator();
   			// we iterate through all the pieces and check for possible capture
 			while(Alive.hasNext())
 			{
@@ -633,18 +680,22 @@ class Board{
 				Vector<Vector<Integer>> trajectory = getNTrajectory(piece);
 				Iterator<Vector<Integer>> itr = trajectory.iterator();
 
-				while(itr.hasNext()){
+				while(itr.hasNext())
+				{
 					Vector<Integer> cor = itr.next();
 					if(noCheck(piece, (int)cor.get(0), (int)cor.get(1)))
 					{
-						System.out.println(piece);
+						//////System.out.println(piece);
+						////System.out.println("Out of checkMate");
 						return false;
 					}
 				}
 			}
+			////System.out.println("Out of checkMate");
 				return true;
 		}
 
+		////System.out.println("Out of checkMate");
 		return false;
 	}
 
@@ -654,7 +705,8 @@ class Board{
 	public boolean Check(int player)
 	{
 
-		// System.out.println("In check");
+		////System.out.println("In Check");
+		//System.out.println("In check");
 		Iterator<String> it;
 		int i;
 		int j;
@@ -663,6 +715,7 @@ class Board{
 		Vector<Integer> kingCord = M.get("wk");
 		i = (int)kingCord.get(0);
 		j = (int)kingCord.get(1);
+		
 		it = blackAlive.iterator();
 		
 
@@ -672,43 +725,52 @@ class Board{
 			i = (int)kingCord.get(0);
 			j = (int)kingCord.get(1);
 			it = whiteAlive.iterator();
+
 			
 		}
 		// int cc = 0;
+
+	 	//System.out.println("------->"+i + " " + j);
 	   while(it.hasNext())
 	   {
-	   		// System.out.println(c);
+	   		// //System.out.println(c);
 	   		// c += 1;
-			Vector<Vector<Integer>> v = getNTrajectory(it.next());
+	   		String loopThroughPiece = it.next();
+	   		//System.out.println("loopThroughPiece "+loopThroughPiece);
+			Vector<Vector<Integer>> v = getNTrajectory(loopThroughPiece);
 			Iterator <Vector<Integer>> itr =  v.iterator();
 
 			while(itr.hasNext())
 			{
 				Vector<Integer> C = itr.next();
 				if( (int)C.get(0) == i && (int)C.get(1)== j )
-				{ return true;}
+				{ 
+					//System.out.println("Out of Check");
+					return true;
+				}
 			}
 	   	}
 
+	   	//System.out.println("Out of Check");
 		return false;
 	}
 
 	public boolean noCheck(String piece, int r_, int c_)
 	{
 
+		//System.out.println("In noCheck");
 		/** Checks if moving the piece to r_ c_ results in a check
 			returns true if the move results in a check
 		*/
 
-		System.out.println("noCheck");
-		System.out.println(piece);
-		System.out.println(r_ + " " + c_);
+
 		char p = piece.charAt(0);
 		int player = ((p - 'w') == 0)? 0 : 1;
 
 		String capturedPiece = B[r_][c_];
 
-		if(!capturedPiece.equals("")){
+		if(!capturedPiece.equals(""))
+		{
 			if(capturedPiece.charAt(0) - 'w' == 0)
 			{
 				whiteAlive.remove(capturedPiece);
@@ -727,10 +789,29 @@ class Board{
 		B[r_][c_] = B[r][c];
 		B[r][c] = "";
 
+		
+		Vector<Integer> temp = new Vector<Integer>();
+		temp.add(r_);temp.add(c_);
+		this.M.put(B[r_][c_], temp);
+
+
 		boolean result = !(Check(player));
 
 		B[r_][c_] = capturedPiece;
 		B[r][c] = piece;
+
+		temp = new Vector<Integer>();
+		temp.add(r);temp.add(c);
+		this.M.put(piece, temp);
+
+		if(capturedPiece.equals("") == false){
+			temp = new Vector<Integer>();
+			temp.add(r_);temp.add(c_);
+			this.M.put(capturedPiece, temp);
+		}
+
+
+
 
 		if(!capturedPiece.equals(""))
 		{
@@ -744,7 +825,8 @@ class Board{
 			}
 		}
 
-
+		//System.out.println("NOCHECK " + result);
+		//System.out.println("Out of noCheck");
 		return result;
 	}
 
@@ -753,10 +835,13 @@ class Board{
 		/** Gets the trajectory of King
 		includes all possible moves that are valid and do not result in check
 		*/
-
+		////System.out.println("In of  getKingTrajectoryMove");
+		//System.out.println("PIECE: "+piece);
 		Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
 		int player = ((piece.charAt(0) - 'w') == 0)?0:1;
+
 		Vector<Integer> Cor = M.get(piece);
+		
 		int r = (int)Cor.get(0);
 		int c = (int)Cor.get(1);
 
@@ -767,8 +852,8 @@ class Board{
 		int dY[] = new int[]{1, 0, -1};
 		int dX[] = new int[]{1, 0, -1};
 
-		// System.out.println(piece);
-		// System.out.println("In king trajectory");
+		// //System.out.println(piece);
+		// //System.out.println("In king trajectory");
 		
 		for(int dy:dY)
 		{
@@ -778,21 +863,38 @@ class Board{
 				int x = r + dx; int y = c + dy;
 				
 				if(x == r && y == c){continue;}
-				
+
+				//System.out.println(x + " "+ y);
+				//System.out.println("isvalid " + isValid(x, y));
+				//System.out.println("!filled(player, x, y) " + !filled(player, x, y));
+
 				boolean cond = isValid(x, y) && !filled(player, x, y);
 				
+				//System.out.println("COND without no check" + cond);
 				if(normal){cond = cond && noCheck(piece, x, y);}
 				else {;}
 				// if(isValid(x, y)){
-				// System.out.println("check " + !(noCheck(piece, x, y)));}
+				// //System.out.println("check " + !(noCheck(piece, x, y)));}
+				//System.out.println("COND with nocheck " + cond);
 				if(cond)
 				{
-					// System.out.println(normal + "normal");
-					// System.out.println(x + " "+ y);
-					// System.out.println(" true");
+					// //System.out.println(normal + "normal");
+					//System.out.println("true");
+
+					Iterator<Vector<Integer>> itr = result.iterator();
+					while(itr.hasNext())
+					{
+						Vector<Integer> temp = itr.next();
+						//System.out.println((int)temp.get(0) + " " + (int)temp.get(1));
+					}
+					// //System.out.println(" true");
 					Cor = new Vector<Integer>();
 					Cor.add(x); Cor.add(y);
 					result.add(Cor);
+				}
+				else
+				{
+					//System.out.println("false");
 				}
 			}
 		}
@@ -811,20 +913,29 @@ class Board{
 			result.add(Cor);
 		}
 
-		// System.out.println("-----------------------------");
-		// System.out.println(result.size());
+		// //System.out.println("-----------------------------");
+		// //System.out.println(result.size());
 		// Iterator<Vector<Integer>> a = result.iterator();
 		// while(a.hasNext())
 		// {
 		// 	Vector<Integer> CorIn = a.next();
-		// 	System.out.println(CorIn.get(0)+" "+CorIn.get(1));
+		// 	//System.out.println(CorIn.get(0)+" "+CorIn.get(1));
 		// }
+		////System.out.println("Out of  getKingTrajectoryMove");
+		Iterator<Vector<Integer>> itr = result.iterator();
+		while(itr.hasNext())
+		{
+			Vector<Integer> temp = itr.next();
+			//System.out.println((int)temp.get(0) + " " + (int)temp.get(1));
+		}
+					// //System.out.println(" true");
 		return result;
 
 	}
 
 	public Vector<Vector<Integer>> getTrajectory(String piece)
 	{
+		////System.out.println("In getTrajectoryMove");
 		/**Returns the tragectory of the piece*/
 		if(!piece.equals(""))
 		{
@@ -845,6 +956,7 @@ class Board{
 
 	public Vector<Vector<Integer>> getNTrajectory(String piece)
 	{
+		////System.out.println("In getNTrajectoryMove");
 		/**Returns the tragectory of the piece*/
 		if(!piece.equals(""))
 		{
@@ -867,6 +979,7 @@ class Board{
 	
 	public boolean isValidChessMove(int r, int c, int r_, int c_, int player)
 	{
+		////System.out.println("In isValiddChessMove");
 		if(empty(r,c)) 
 		{
 			return false;
@@ -1022,9 +1135,10 @@ class Board{
 
 	public Vector<Vector<Integer>> getPawnTrajectory(String piece, boolean normal)
 	{
+		////System.out.println("In getPawnTrajectoryMove");
 		/** Gets the trajectory of pawn*/
 
-		// System.out.println("Pawn Trajectory");
+		// //System.out.println("Pawn Trajectory");
 		Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
 
 		char p = piece.charAt(0);
@@ -1072,15 +1186,15 @@ class Board{
 			{
 				for(int dy: dY)
 				{
-					// System.out.println("Pawn " + (x +  dx) + " "+ (y + dy));
-					// System.out.println(filled(player,  x+dx, y+dy));
-					// System.out.println(filled(otherplayer,  x+dx, y+dy));
-					//System.out.println((dy == 0||(dy != 0 && filled(otherplayer, x+dy, y + dy))));
-					//System.out.println(dy == 0);
-					//System.out.println((dy != 0 && filled(otherplayer, x+dy, y + dy)));
-					// System.out.println(dy != 0 );
-					// System.out.println((filled(otherplayer, x+dy, y + dy)));
-					// System.out.println(dy);
+					// //System.out.println("Pawn " + (x +  dx) + " "+ (y + dy));
+					// //System.out.println(filled(player,  x+dx, y+dy));
+					// //System.out.println(filled(otherplayer,  x+dx, y+dy));
+					////System.out.println((dy == 0||(dy != 0 && filled(otherplayer, x+dy, y + dy))));
+					////System.out.println(dy == 0);
+					////System.out.println((dy != 0 && filled(otherplayer, x+dy, y + dy)));
+					// //System.out.println(dy != 0 );
+					// //System.out.println((filled(otherplayer, x+dy, y + dy)));
+					// //System.out.println(dy);
 					boolean cond = isValid(x + dx, y + dy);
 					
 					if(dy != 0)
@@ -1138,6 +1252,7 @@ class Board{
 				}
 			}
 		}
+		////System.out.println("Out of  getPawnTrajectoryMove");
 		return result;
 	}
 
@@ -1149,6 +1264,7 @@ class Board{
 		includes all possible moves that are valid and do not result in check
 		*/
 
+		////System.out.println("In of  getRookTrajectoryMove");
 		Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
 
 		int player = ((piece.charAt(0) - 'w') == 0)?0:1;
@@ -1221,6 +1337,7 @@ class Board{
 			if(y < 0){leftChecked = true;x = r;y = c;}
 			if(y > 8){rightChecked = true;x = r;y = c;}
 		}
+		////System.out.println("Out of  getRookTrajectoryMove");
 		return result;
 	}
 
@@ -1231,7 +1348,7 @@ class Board{
 		includes all possible moves that are valid and do not result in check
 		*/
 
-		
+		////System.out.println("In of  getBishopTrajectoryMove");
 		Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
 
 		int player = ((piece.charAt(0) - 'w') == 0)?0:1;
@@ -1305,6 +1422,7 @@ class Board{
 			if(x > 8 && y < 0){lowerLeftChecked = true;x = r;y = c;}
 			if(x > 8 && y > 8){lowerRightChecked = true;x = r;y = c;}
 		}
+		////System.out.println("Out of  getBishopTrajectoryMove");
 
 		return result;
 	}
@@ -1315,6 +1433,7 @@ class Board{
 		includes all possible moves that are valid and do not result in check
 		*/
 
+		////System.out.println("In of  getQueenTrajectoryMove");
 		
 		Vector<Vector<Integer>> result = getBishopTrajectory(piece, normal);
 		Vector<Vector<Integer>> toAdd = getRookTrajectory(piece, normal);
@@ -1324,6 +1443,7 @@ class Board{
 		{
 			result.add(itr.next());
 		}
+		////System.out.println("Out of  getQueenTrajectoryMove");
 		return result;
 	}
 
@@ -1333,6 +1453,7 @@ class Board{
 		includes all possible moves that are valid and do not result in check
 		*/
 		
+		////System.out.println("In of  getKnightTrajectoryMove");
 		char player = piece.charAt(0);
 	
 
@@ -1378,6 +1499,7 @@ class Board{
 				}
 			}
 		}
+		////System.out.println("Out of  getKnightTrajectoryMove");
 		return result;
 	}
 }

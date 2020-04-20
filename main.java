@@ -161,15 +161,17 @@ class chess extends JFrame implements ActionListener
 
 	public boolean play()
 	{
+		this.board.display();
+		System.out.println("In play");
 		
-		boolean notDraworLose = !(this.board.checkMate(0) || this.board.checkMate(1) || this.board.staleMate(0) ||this.board.staleMate(1) );
+		//boolean notDraworLose = !(this.board.checkMate(0) || this.board.checkMate(1) || this.board.staleMate(0) ||this.board.staleMate(1) );
 
-		System.out.println(notDraworLose);
+		//System.out.println(notDraworLose);
 		System.out.println("count" + this.count);
 		// notDraworLose && 
 		if(isValid(this.r, this.c) && isValid(this.r_, this.c_))
 		{
-			System.out.println(this.r +" "+this.r_ + " "+this.c +" "+ this.c_);
+			System.out.println(this.r +" "+this.c + " "+this.r_ +" "+ this.c_);
 
 			if(this.board.isValidChessMove(this.r, this.c, this.r_, this.c_, this.count%2))
 			{
@@ -178,7 +180,7 @@ class chess extends JFrame implements ActionListener
 
 				result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
 
-				System.out.println(result);
+				System.out.println("Result "+result);
 				if(result == 0 || result == -2)
 				{
 					String move = ""+ String.valueOf(r) + "," +  String.valueOf(c) + "," +  String.valueOf(r_) + "," + String.valueOf(c_) + "\n";
@@ -208,36 +210,38 @@ class chess extends JFrame implements ActionListener
 			}
 			return false;
 		}
-		// else
-		// {
-			// if(this.board.checkMate(0)){
-			// 	System.out.println("Black has Won !!!!");
-			// }
-			// else if(this.board.checkMate(1)){
-			// 	System.out.println("White has Won !!!!");
-			// }
+		else
+		{
+			if(this.board.checkMate(0)){
+				System.out.println("Black has Won !!!!");
+			}
+			else if(this.board.checkMate(1)){
+				System.out.println("White has Won !!!!");
+			}
 
-			// else
-			// {	
-			// 	if(this.board.staleMate(0))
-			// 	{
-			// 		System.out.println("Draw!!!");
-			// 	}
+			else
+			{	
+				if(this.board.staleMate(0))
+				{
+					System.out.println("Draw!!!");
+				}
 
-			// 	else if(this.board.staleMate(1))
-			// 	{
-			// 		System.out.println("Draw!!!");
-			// 	}
-			// }
+				else if(this.board.staleMate(1))
+				{
+					System.out.println("Draw!!!");
+				}
+			}
+			System.out.println("Out of play");
 			return false;
-		// }
-
+		}
+		
 
 	}
 
 	public void setBoard()
 	{
 
+		System.out.println("In setBoard");
 		for(int i = 0; i < 8; i++)//i is rows
 		{
 			for(int j = 0; j < 8; j++)
@@ -279,6 +283,7 @@ class chess extends JFrame implements ActionListener
 				}
 			}
 		}
+		System.out.println("Out of setBoard");
 		return;
 
 	}
@@ -323,12 +328,13 @@ class chess extends JFrame implements ActionListener
 			}
 		}
 		System.out.println("-----------------");
+		System.out.println("Out of highlightTrajectory");
 
 	}
 
 	public void actionPerformed(ActionEvent e)
 	{
-		System.out.println("actionPerformed");
+		System.out.println("In actionPerformed");
 		System.out.println("this.count "+this.count);
 		System.out.println("this.clicked "+ this.clicked);
 		if(e.getSource() == save)
@@ -417,6 +423,7 @@ class chess extends JFrame implements ActionListener
 				this.r = -1; this.c = -1; this.r_ = -1; this.c_ = -1;
 			}
 		}
+		System.out.println("Out of actionPerformed");
 		return;
 	}
 
@@ -507,6 +514,7 @@ class chess extends JFrame implements ActionListener
 			
 			this.board = new Board();
 			while ((C = fr.read()) != -1){
+				System.out.println("-> "+r+" "+c+" "+r_+" " +c_);
 				System.out.println((char)C);
 				if((char)C - '\n' == 0)
 				{
@@ -519,6 +527,7 @@ class chess extends JFrame implements ActionListener
 				else if((char)C - ',' == 0)
 				{
 
+					
 					if(c == -1)
 					{
 						C = fr.read();
