@@ -163,12 +163,12 @@ class chess extends JFrame implements ActionListener
 	{
 		this.board.display();
 		System.out.println("In play");
-		
+
 		//boolean notDraworLose = !(this.board.checkMate(0) || this.board.checkMate(1) || this.board.staleMate(0) ||this.board.staleMate(1) );
 
 		//System.out.println(notDraworLose);
 		System.out.println("count" + this.count);
-		// notDraworLose && 
+		// notDraworLose &&
 		if(isValid(this.r, this.c) && isValid(this.r_, this.c_))
 		{
 			System.out.println(this.r +" "+this.c + " "+this.r_ +" "+ this.c_);
@@ -176,7 +176,7 @@ class chess extends JFrame implements ActionListener
 			if(this.board.isValidChessMove(this.r, this.c, this.r_, this.c_, this.count%2))
 			{
 				int result = -3;
-				// need to return winner 
+				// need to return winner
 
 				result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
 
@@ -206,35 +206,37 @@ class chess extends JFrame implements ActionListener
 					return true;
 				}
 
-				return false;
 			}
-			return false;
+
 		}
-		else
-		{
-			if(this.board.checkMate(0)){
-				System.out.println("Black has Won !!!!");
+
+			System.out.println(this.board.checkMate(0) +" "+this.board.checkMate(1) + this.board.staleMate(0) +" "+this.board.staleMate(1));
+
+			if(this.board.checkMate(0))
+			{
+				System.out.println("Black Wins");
+				JOptionPane.showMessageDialog(null, "Black Wins!");
 			}
 			else if(this.board.checkMate(1)){
-				System.out.println("White has Won !!!!");
+				JOptionPane.showMessageDialog(null, "White Wins!");
 			}
 
 			else
-			{	
+			{
 				if(this.board.staleMate(0))
 				{
-					System.out.println("Draw!!!");
+					JOptionPane.showMessageDialog(null, "Draw Game");
 				}
 
 				else if(this.board.staleMate(1))
 				{
-					System.out.println("Draw!!!");
+					JOptionPane.showMessageDialog(null, "Draw Game");
 				}
 			}
 			System.out.println("Out of play");
 			return false;
-		}
-		
+
+
 
 	}
 
@@ -361,7 +363,7 @@ class chess extends JFrame implements ActionListener
 			loadGame();
 			setBoard();
 			super.setVisible(false);
-			
+
 			this.board.display();
 			resetColors();
 			super.setVisible(true);
@@ -494,7 +496,7 @@ class chess extends JFrame implements ActionListener
 			dialog.setMode(FileDialog.LOAD);
 			dialog.setVisible(true);
 			File file = new File( dialog.getFile() );
-		
+
 			FileReader fr = new FileReader(file);
 
 			String piece = "";
@@ -509,9 +511,9 @@ class chess extends JFrame implements ActionListener
 
 			this.count = 0;
 			int r, c, r_, c_;
-			
+
 			r = -1; c = -1; r_= -1; c_ = -1;
-			
+
 			this.board = new Board();
 			while ((C = fr.read()) != -1){
 				System.out.println("-> "+r+" "+c+" "+r_+" " +c_);
@@ -527,7 +529,7 @@ class chess extends JFrame implements ActionListener
 				else if((char)C - ',' == 0)
 				{
 
-					
+
 					if(c == -1)
 					{
 						C = fr.read();
@@ -547,7 +549,7 @@ class chess extends JFrame implements ActionListener
 
 				if(!(r == -1 || r_ == -1 || c== -1 || c_ == -1))
 				{
-		
+
 					this.r = r;
 					this.c = c;
 					this.r_ = r_;
@@ -555,7 +557,7 @@ class chess extends JFrame implements ActionListener
 					play();
 					r = -1; c = -1; r_ = -1; c_ = -1;
 				}
-			}		
+			}
 		}
 		catch(Exception ex)
 		{
