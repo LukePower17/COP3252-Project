@@ -54,7 +54,7 @@ class chess extends JFrame implements ActionListener
 
 	private int count;
 
-/////////////////////
+
 	public chess()
 	{
 		super("Chess");
@@ -93,7 +93,7 @@ class chess extends JFrame implements ActionListener
 		super.setVisible(true);
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		super.setSize(720, 720);
-//////////////////////////////
+
 
 		menuBar = new JMenuBar();
 		menu = new JMenu("File");
@@ -119,7 +119,7 @@ class chess extends JFrame implements ActionListener
 		this.setJMenuBar(menuBar);
 		boolean isDarkSelected = dark.isSelected();
 
-/////////////
+
 		JPanel controls = new JPanel();
 		controls.setLayout(new GridLayout(8, 8,2,2));
 
@@ -161,10 +161,13 @@ class chess extends JFrame implements ActionListener
 
 	public boolean play()
 	{
+		
 		boolean notDraworLose = !(this.board.checkMate(0) || this.board.checkMate(1) || this.board.staleMate(0) ||this.board.staleMate(1) );
 
 		System.out.println(notDraworLose);
-		if(notDraworLose && isValid(this.r, this.c) && isValid(this.r_, this.c_))
+		System.out.println("count" + this.count);
+		// notDraworLose && 
+		if(isValid(this.r, this.c) && isValid(this.r_, this.c_))
 		{
 			System.out.println(this.r +" "+this.r_ + " "+this.c +" "+ this.c_);
 
@@ -173,19 +176,31 @@ class chess extends JFrame implements ActionListener
 				int result = -3;
 				// need to return winner 
 
-				 result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
-				 if(result == 0 || result == -2)
-				 {
-				 	String move = ""+ String.valueOf(r) + "," +  String.valueOf(c) + "," +  String.valueOf(r_) + "," + String.valueOf(c_) + "\n";
+				result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
+
+				System.out.println(result);
+				if(result == 0 || result == -2)
+				{
+					String move = ""+ String.valueOf(r) + "," +  String.valueOf(c) + "," +  String.valueOf(r_) + "," + String.valueOf(c_) + "\n";
 					this.moves += move;
-					 this.count += 1;
-				 }
-			
+					this.count += 1;
+				}
 
 				if(result == 0)
 				{
 					setBoard();
 					resetColors(this.r, this.c, this.r_, this.c_);
+
+					if(this.board.Check(0))
+					{
+						Vector<Integer> cor = this.board.M.get("wk");
+						b[(int)cor.get(0)][(int)cor.get(1)].dangerMode();
+					}
+					else if(this.board.Check(1))
+					{
+						Vector<Integer> cor = this.board.M.get("bk");
+						b[(int)cor.get(0)][(int)cor.get(1)].dangerMode();
+					}
 					return true;
 				}
 
@@ -193,29 +208,29 @@ class chess extends JFrame implements ActionListener
 			}
 			return false;
 		}
-		else
-		{
-			if(this.board.checkMate(0)){
-				System.out.println("Black has Won !!!!");
-			}
-			else if(this.board.checkMate(1)){
-				System.out.println("White has Won !!!!");
-			}
+		// else
+		// {
+			// if(this.board.checkMate(0)){
+			// 	System.out.println("Black has Won !!!!");
+			// }
+			// else if(this.board.checkMate(1)){
+			// 	System.out.println("White has Won !!!!");
+			// }
 
-			else
-			{	
-				if(this.board.staleMate(0))
-				{
-					System.out.println("Draw!!!");
-				}
+			// else
+			// {	
+			// 	if(this.board.staleMate(0))
+			// 	{
+			// 		System.out.println("Draw!!!");
+			// 	}
 
-				else if(this.board.staleMate(1))
-				{
-					System.out.println("Draw!!!");
-				}
-			}
+			// 	else if(this.board.staleMate(1))
+			// 	{
+			// 		System.out.println("Draw!!!");
+			// 	}
+			// }
 			return false;
-		}
+		// }
 
 
 	}
@@ -270,6 +285,7 @@ class chess extends JFrame implements ActionListener
 
 	public void highlightTrajectory(int x, int y)
 	{
+		System.out.println("In highlight trajectory");
 		char player = (this.count%2 == 0)?'w':'b';
 
 		if(!(this.board.B[x][y].equals("") == false && this.board.B[x][y].charAt(0) - player == 0))
@@ -297,19 +313,24 @@ class chess extends JFrame implements ActionListener
 
 			if(this.board.empty(i, j))
 			{
+				System.out.println("activated");
 				this.b[i][j].activeMode();
 			}
-
 			else if(this.board.B[i][j].charAt(0) - p != 0)
 			{
+				System.out.println("dangerMode");
 				this.b[i][j].dangerMode();
 			}
 		}
 		System.out.println("-----------------");
+
 	}
 
 	public void actionPerformed(ActionEvent e)
 	{
+		System.out.println("actionPerformed");
+		System.out.println("this.count "+this.count);
+		System.out.println("this.clicked "+ this.clicked);
 		if(e.getSource() == save)
 		{
 			saveGame();
@@ -349,22 +370,19 @@ class chess extends JFrame implements ActionListener
 
 					if(e.getSource() == b[i][j])
 					{
-						if(this.clicked == 0 || this.clicked == -1)
+						if(this.clicked == 0)
 						{
-							this.clicked = 0;
+
 							this.r = i;
 							this.c = j;
 
-							this.r_ = -1;
-							this.c_ = -1;
-
-							this.clicked += 1;
+							this.clicked = 1;
 						}
 						else if(this.clicked == 1)
 						{
 							this.r_ = i;
 							this.c_ = j;
-							this.clicked = 0;
+							this.clicked = 2;
 
 						}
 					}
@@ -372,7 +390,7 @@ class chess extends JFrame implements ActionListener
 			}
 		}
 
-		if(clicked == 1)
+		if(this.clicked == 1)
 		{
 			char p = (this.count%2 == 0)? 'w':'b';
 
@@ -382,13 +400,22 @@ class chess extends JFrame implements ActionListener
 			}
 			else
 			{
-				this.clicked = -1;
+				this.clicked = 0;
 			}
 		}
-		if(clicked == 0)
+		else if(this.clicked == 2)
 		{
-			resetColors();
-			boolean result = this.play();
+			if(this.r == this.r_ && this.c == this.c_)
+			{
+				this.clicked = 0;
+				resetColors();
+			}
+			else{
+				resetColors();
+				boolean result = this.play();
+				this.clicked = 0;
+				this.r = -1; this.c = -1; this.r_ = -1; this.c_ = -1;
+			}
 		}
 		return;
 	}

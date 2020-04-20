@@ -10,3 +10,9 @@ Wrote it in the order things came to my mind. Order in which the items appear do
 8) Display the captured pieces on the left and the right of Layout
 9) Change board layouts
 10) Display all the previous moves
+
+1)StaleMate (Debug and test)
+2)KingsTrajectory
+3)Winner (End game screen (Draw or Win)))
+4)Promotion
+5)Hightlight Trajectory
