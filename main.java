@@ -34,6 +34,20 @@ class chess extends JFrame implements ActionListener
 	private Icon BPawn, BBish, BRook, BQueen, BKing, BKnight;
 
 
+	Color blueModeWhite;
+	Color blueModeBlack;
+
+	Color darkModeBlack;
+	Color darkModeWhite;
+
+	Color lightModeBlack;
+	Color lightModeWhite;
+
+	Color activateColor;
+	Color dangerColor;
+	Color lastMoveColor;
+
+
 	private Board board;
 
 	private String moves;
@@ -41,7 +55,7 @@ class chess extends JFrame implements ActionListener
 	private JMenuBar menuBar;
 	private JMenuItem load, create, save;
 	private JMenu menu, theme;
-	private JRadioButtonMenuItem dark, light;
+	private JRadioButtonMenuItem dark, light, blue;
 	private ButtonGroup Group;
 	private File loadedFile;
 	private String loadedGame ="";
@@ -104,24 +118,46 @@ class chess extends JFrame implements ActionListener
 		create.addActionListener(this);
 		load = new JMenuItem("Load game");
 		load.addActionListener(this);
-		light = new JRadioButtonMenuItem("Light theme");
+
 		Group = new ButtonGroup();
+		light = new JRadioButtonMenuItem("Brown theme",true);
+		dark = new JRadioButtonMenuItem("Green theme");
+		blue = new JRadioButtonMenuItem("Blue theme");
+		theme.add(blue);
 		theme.add(light);
-		dark = new JRadioButtonMenuItem("Dark theme", true);
 		theme.add(dark);
+		Group.add(blue);
 		Group.add(light);
 		Group.add(dark);
+		light.addActionListener(this);
+		dark.addActionListener(this);
+		blue.addActionListener(this);
+
 		menu.add(create);
 		menu.add(save);
 		menu.add(load);
 		menuBar.add(menu);
 		menuBar.add(theme);
 		this.setJMenuBar(menuBar);
+
 		boolean isDarkSelected = dark.isSelected();
 
 
 		JPanel controls = new JPanel();
 		controls.setLayout(new GridLayout(8, 8,2,2));
+
+		blueModeWhite = new Color(228, 232, 236);
+		blueModeBlack = new Color(58, 114, 156);
+
+		darkModeBlack = new Color(118, 150, 86);
+		darkModeWhite = new Color(250,250,245);
+
+		lightModeBlack = new Color(181, 136, 99);
+		lightModeWhite = new Color(240, 217, 181);
+
+		activateColor = new Color(0, 200,0,  150);
+		dangerColor = new Color(225, 0, 0, 150);
+		lastMoveColor = new Color(252,239,154);
 
 		for(int i = 0; i < 8; i++)
 		{
@@ -129,20 +165,13 @@ class chess extends JFrame implements ActionListener
 			{
 
 
-				Color white = new Color(238, 238, 210);
-				//Color black = new Color(10, 10, 10,150);
-				Color black = new Color(118, 115, 110,150);
-				Color green = new Color(0, 200,0,  150);
-				Color red = new Color(225, 0, 0, 150);
-
-
-				if(j%2 == (i%2)){
-
-					b[i][j] = new square(black, green, red, Color.WHITE);
+				if(j%2 == (i%2))
+				{
+					b[i][j] = new square(lightModeBlack, activateColor, dangerColor, lastMoveColor);
 				}
 				else
 				{
-					b[i][j] = new square(white, green, red, Color.WHITE);
+					b[i][j] = new square(lightModeWhite, activateColor, dangerColor, lastMoveColor);
 				}
 				b[i][j].addActionListener(this);
 				controls.add(b[i][j]);
@@ -164,25 +193,25 @@ class chess extends JFrame implements ActionListener
 		int result = -4;
 		if(this.board.checkMate(0))
 			{
-				System.out.println("Black Wins");
-				JOptionPane.showMessageDialog(null, "Black Wins!");
-		}
+				JOptionPane.showMessageDialog(null, "Black Wins!\nSelect Create New Game to play again");
+			}
 			else if(this.board.checkMate(1)){
-				JOptionPane.showMessageDialog(null, "White Wins!");
+				JOptionPane.showMessageDialog(null, "White Wins!\nSelect Create New Game to play again");
 			}
 
 			else
 			{
-				if(this.board.staleMate(0))
-				{
-					JOptionPane.showMessageDialog(null, "Draw Game");
-				}
+					if(this.board.staleMate(0))
+					{
+						JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
+					}
 
-				else if(this.board.staleMate(1))
-				{
-					JOptionPane.showMessageDialog(null, "Draw Game");
-				}
-			}
+					else if(this.board.staleMate(1))
+					{
+						JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
+					}
+
+		}
 			System.out.println("Out of play");
 			// return false;
 
@@ -240,23 +269,23 @@ class chess extends JFrame implements ActionListener
 		if(this.board.checkMate(0))
 		{
 			System.out.println("Black Wins");
-			JOptionPane.showMessageDialog(null, "Black Wins!");
+			JOptionPane.showMessageDialog(null, "Black Wins!\nSelect Create New Game to play again");
 		}
 		else if(this.board.checkMate(1)){
-			JOptionPane.showMessageDialog(null, "White Wins!");
+			JOptionPane.showMessageDialog(null, "White Wins!\nSelect Create New Game to play again");
 		}
 
 
 		if(this.board.staleMate(0))
 		{
-			JOptionPane.showMessageDialog(null, "Draw Game");
+			JOptionPane.showMessageDialog(null, "Draw Game\nSelect Create New Game to play again");
 		}
 
 		else if(this.board.staleMate(1))
 		{
-			JOptionPane.showMessageDialog(null, "Draw Game");
+			JOptionPane.showMessageDialog(null, "Draw Game\nSelect Create New Game to play again");
 		}
-		
+
 		if(result == 0 || result == -2)
 			return true;
 		System.out.println("Out of play");
@@ -360,11 +389,67 @@ class chess extends JFrame implements ActionListener
 
 	}
 
+	public void changeTheme(int x)
+	{
+
+		Color w,b;
+
+		if(x == 0)
+		{
+				w = lightModeWhite;
+				b = lightModeBlack;
+		}
+		else if(x == 1)
+		{
+			w = darkModeWhite;
+			b = darkModeBlack;
+		}
+		else
+		{
+			w = blueModeWhite;
+			b = blueModeBlack;
+		}
+
+		for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+			{
+				if(j%2 == (i%2))
+				{
+					this.b[i][j].setNormalColor(b);
+				}
+				else
+				{
+					this.b[i][j].setNormalColor(w);
+				}
+			}
+		}
+		super.setVisible(false);
+		super.setVisible(true);
+		resetColors();
+
+	}
+
+
 	public void actionPerformed(ActionEvent e)
 	{
 		System.out.println("In actionPerformed");
 		System.out.println("this.count "+this.count);
 		System.out.println("this.clicked "+ this.clicked);
+		if(e.getSource()== light)
+		{
+			changeTheme(0);
+		}
+		if(e.getSource()== dark)
+		{
+			changeTheme(1);
+		}
+		if(e.getSource()== blue)
+		{
+			changeTheme(2);
+		}
+
+
 		if(e.getSource() == save)
 		{
 			saveGame();
