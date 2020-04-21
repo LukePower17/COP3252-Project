@@ -161,6 +161,31 @@ class chess extends JFrame implements ActionListener
 
 	public boolean play()
 	{
+		int result = -4;
+		if(this.board.checkMate(0))
+			{
+				System.out.println("Black Wins");
+				JOptionPane.showMessageDialog(null, "Black Wins!");
+		}
+			else if(this.board.checkMate(1)){
+				JOptionPane.showMessageDialog(null, "White Wins!");
+			}
+
+			else
+			{
+				if(this.board.staleMate(0))
+				{
+					JOptionPane.showMessageDialog(null, "Draw Game");
+				}
+
+				else if(this.board.staleMate(1))
+				{
+					JOptionPane.showMessageDialog(null, "Draw Game");
+				}
+			}
+			System.out.println("Out of play");
+			// return false;
+
 		this.board.display();
 		System.out.println("In play");
 
@@ -175,7 +200,7 @@ class chess extends JFrame implements ActionListener
 
 			if(this.board.isValidChessMove(this.r, this.c, this.r_, this.c_, this.count%2))
 			{
-				int result = -3;
+				result = -3;
 				// need to return winner
 
 				result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
@@ -203,38 +228,39 @@ class chess extends JFrame implements ActionListener
 						Vector<Integer> cor = this.board.M.get("bk");
 						b[(int)cor.get(0)][(int)cor.get(1)].dangerMode();
 					}
-					return true;
+					// return true;
 				}
 
 			}
 
 		}
 
-			System.out.println(this.board.checkMate(0) +" "+this.board.checkMate(1) + this.board.staleMate(0) +" "+this.board.staleMate(1));
+		System.out.println(this.board.checkMate(0) +" "+this.board.checkMate(1) + this.board.staleMate(0) +" "+this.board.staleMate(1));
 
-			if(this.board.checkMate(0))
-			{
-				System.out.println("Black Wins");
-				JOptionPane.showMessageDialog(null, "Black Wins!");
-			}
-			else if(this.board.checkMate(1)){
-				JOptionPane.showMessageDialog(null, "White Wins!");
-			}
+		if(this.board.checkMate(0))
+		{
+			System.out.println("Black Wins");
+			JOptionPane.showMessageDialog(null, "Black Wins!");
+		}
+		else if(this.board.checkMate(1)){
+			JOptionPane.showMessageDialog(null, "White Wins!");
+		}
 
-			else
-			{
-				if(this.board.staleMate(0))
-				{
-					JOptionPane.showMessageDialog(null, "Draw Game");
-				}
 
-				else if(this.board.staleMate(1))
-				{
-					JOptionPane.showMessageDialog(null, "Draw Game");
-				}
-			}
-			System.out.println("Out of play");
-			return false;
+		if(this.board.staleMate(0))
+		{
+			JOptionPane.showMessageDialog(null, "Draw Game");
+		}
+
+		else if(this.board.staleMate(1))
+		{
+			JOptionPane.showMessageDialog(null, "Draw Game");
+		}
+		
+		if(result == 0 || result == -2)
+			return true;
+		System.out.println("Out of play");
+		return false;
 
 
 
