@@ -587,8 +587,7 @@ class Board{
 
 				// if(!isKing)
 				// {
-					B[r_][c_] = B[r][c];
-					B[r][c] = "";
+					
 				// }
 				// Castling
 				if(isKing)
@@ -605,11 +604,13 @@ class Board{
 							moved.put(B[r][0], true);
 							forceMove(r, 7, r, 5);
 						}
-						B[r_][c_] = B[r][c];
-						B[r][c] = "";
+						// B[r_][c_] = B[r][c];
+						// B[r][c] = "";
 					}
 				}
 
+				B[r_][c_] = B[r][c];
+				B[r][c] = "";
 				if(m == false)
 				{
 					moved.put(piece,true);
@@ -860,12 +861,12 @@ class Board{
 	public boolean noCheck(String piece, int r_, int c_)
 	{
 
-		//System.out.println("In noCheck");
+		System.out.println("In noCheck");
 		/** Checks if moving the piece to r_ c_ results in a check
 			returns true if the move results in a check
 		*/
 
-
+		System.out.println(piece + " " + r_ + " "+c_);
 		char p = piece.charAt(0);
 		int player = ((p - 'w') == 0)? 0 : 1;
 
