@@ -43,6 +43,25 @@ class square extends JButton
 		super.addActionListener(obj);
 	}
 	
+	public void setNormalColor(Color n)
+	{
+		this.normalColor = n;
+	}
+	public void setActiveColor(Color n)
+	{
+		this.activeColor = n;
+	}
+	
+	public void setDangerColor(Color n)
+	{
+		this.dangerColor = n;
+	}
+
+	public void setLastMoveColor(Color n)
+	{
+		this.lastMoveColor = n;
+	}
+
 	public void normalMode()
 	{
 		super.setBackground(normalColor);	
