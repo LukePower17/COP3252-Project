@@ -12,6 +12,10 @@ import java.util.*;
 import java.io.*;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.*;
+import java.net.URL;
+//import java.util.concurrent.locks.ReentrantLock;
+
 
 public class main
 {
@@ -23,15 +27,15 @@ public class main
 }
 
 
-//import Board;
+
 class chess extends JFrame implements ActionListener
 {
 
 
 	private square[][]b;
 
-	private Icon WPawn, WBish, WRook, WQueen, WKing, WKnight;
-	private Icon BPawn, BBish, BRook, BQueen, BKing, BKnight;
+	public Icon WPawn, WBish, WRook, WQueen, WKing, WKnight;
+	public Icon BPawn, BBish, BRook, BQueen, BKing, BKnight;
 
 
 	Color blueModeWhite;
@@ -61,14 +65,15 @@ class chess extends JFrame implements ActionListener
 	private String loadedGame ="";
 
 
-	private int r,c;
-	private int r_, c_;
+	public int r,c;
+	public int r_, c_;
 
 	private int clicked;
 
-	private int count;
+	public int count;
+	public String promotedPiece;
 
-
+	private boolean filled;
 	public chess()
 	{
 		super("Chess");
@@ -103,6 +108,7 @@ class chess extends JFrame implements ActionListener
 
 		this.board = new Board();
 
+		this.filled = false;
 
 		super.setVisible(true);
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -139,8 +145,8 @@ class chess extends JFrame implements ActionListener
 		menuBar.add(menu);
 		menuBar.add(theme);
 		this.setJMenuBar(menuBar);
-
-		boolean isDarkSelected = dark.isSelected();
+		
+		this.promotedPiece = "";
 
 
 		JPanel controls = new JPanel();
@@ -188,40 +194,39 @@ class chess extends JFrame implements ActionListener
 		return (r >= 0 && r < 8) && (c >= 0 && c < 8);
 	}
 
-	public boolean play()
+	public boolean play() throws InterruptedException
 	{
 		int result = -4;
 		if(this.board.checkMate(0))
+		{
+			JOptionPane.showMessageDialog(null, "Black Wins!\nSelect Create New Game to play again");
+		}
+		else if(this.board.checkMate(1)){
+			JOptionPane.showMessageDialog(null, "White Wins!\nSelect Create New Game to play again");
+		}
+
+		else
+		{
+			if(this.board.staleMate(0))
 			{
-				JOptionPane.showMessageDialog(null, "Black Wins!\nSelect Create New Game to play again");
-			}
-			else if(this.board.checkMate(1)){
-				JOptionPane.showMessageDialog(null, "White Wins!\nSelect Create New Game to play again");
+				JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
 			}
 
-			else
+			else if(this.board.staleMate(1))
 			{
-					if(this.board.staleMate(0))
-					{
-						JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
-					}
-
-					else if(this.board.staleMate(1))
-					{
-						JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
-					}
+				JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
+			}
 
 		}
-			System.out.println("Out of play");
-			// return false;
+		
 
 		this.board.display();
-		System.out.println("In play");
+		
 
 		//boolean notDraworLose = !(this.board.checkMate(0) || this.board.checkMate(1) || this.board.staleMate(0) ||this.board.staleMate(1) );
 
 		//System.out.println(notDraworLose);
-		System.out.println("count" + this.count);
+		// System.out.println("count" + this.count);
 		// notDraworLose &&
 		if(isValid(this.r, this.c) && isValid(this.r_, this.c_))
 		{
@@ -234,7 +239,7 @@ class chess extends JFrame implements ActionListener
 
 				result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
 
-				System.out.println("Result "+result);
+				//System.out.println("Result "+result);
 				if(result == 0 || result == -2)
 				{
 					String move = ""+ String.valueOf(r) + "," +  String.valueOf(c) + "," +  String.valueOf(r_) + "," + String.valueOf(c_) + "\n";
@@ -259,12 +264,61 @@ class chess extends JFrame implements ActionListener
 					}
 					// return true;
 				}
+				else if(result == 1)
+				{
+					// System.out.println("In the promotion");
+					String p = (this.count%2 == 0)?"w":"b";
+					String originalPiece = this.board.B[this.r_][this.c_];
+		   			int ind = Integer.parseInt(""+this.board.B[this.r_][this.c_].charAt(2));
+
+		   			
+		   			promotionWindow pw = new promotionWindow(this);
+
+		   			// while(!filled)
+		   			// {
+
+		   				
+		   				// pw.show(this.count%2);
+		   				// promotedPiece = pw.getPiece();
+		   				// System.out.println("promotedPiece " + promotedPiece);
+		   				//pw.setVisible(false);
+		   				// if(!promotedPiece.equals(""))
+		   				// {
+		   				// 	notify();
+		   					// lock.unlock();
+		   			// 	}
+		   			// 	wait();
+		   			// }
+	   				
+		   			//}
+
+		   
+
+		   			// System.out.println("promotedPiece " + promotedPiece);
+		   			this.board.M.remove(originalPiece);
+		   			if(this.count%2 == 0){this.board.whitePawns[ind] = -2; }
+		   			else{this.board.blackPawns[ind] = -2;}
+
+		   			//char promotedPiece = input.next().charAt(0);
+					this.board.B[this.r_][this.c_] = p+this.promotedPiece+String.valueOf(this.count);
+					Vector<Integer> coordinates = new Vector<Integer>();
+					coordinates.add(this.r_); coordinates.add(this.c_);
+
+					this.board.M.put(this.board.B[this.r_][this.c_], coordinates);
+					this.board.moved.put(this.board.B[this.r_][this.c_], false);
+
+					this.promotedPiece = "";
+					setBoard();
+					this.count += 1;
+					// super.setVisible(false);
+		   // 			super.setVisible(true);
+				}
 
 			}
 
 		}
 
-		System.out.println(this.board.checkMate(0) +" "+this.board.checkMate(1) + this.board.staleMate(0) +" "+this.board.staleMate(1));
+		//System.out.println(this.board.checkMate(0) +" "+this.board.checkMate(1) + this.board.staleMate(0) +" "+this.board.staleMate(1));
 
 		if(this.board.checkMate(0))
 		{
@@ -286,9 +340,9 @@ class chess extends JFrame implements ActionListener
 			JOptionPane.showMessageDialog(null, "Draw Game\nSelect Create New Game to play again");
 		}
 
-		if(result == 0 || result == -2)
+		if(result == 0 || result == -2 || result == 1)
 			return true;
-		System.out.println("Out of play");
+		// System.out.println("Out of play");
 		return false;
 
 
@@ -298,7 +352,7 @@ class chess extends JFrame implements ActionListener
 	public void setBoard()
 	{
 
-		System.out.println("In setBoard");
+		// System.out.println("In setBoard");
 		for(int i = 0; i < 8; i++)//i is rows
 		{
 			for(int j = 0; j < 8; j++)
@@ -340,14 +394,14 @@ class chess extends JFrame implements ActionListener
 				}
 			}
 		}
-		System.out.println("Out of setBoard");
+		// System.out.println("Out of setBoard");
 		return;
 
 	}
 
 	public void highlightTrajectory(int x, int y)
 	{
-		System.out.println("In highlight trajectory");
+		// System.out.println("In highlight trajectory");
 		char player = (this.count%2 == 0)?'w':'b';
 
 		if(!(this.board.B[x][y].equals("") == false && this.board.B[x][y].charAt(0) - player == 0))
@@ -358,10 +412,10 @@ class chess extends JFrame implements ActionListener
 		Vector<Vector<Integer>> v = this.board.getTrajectory(this.board.B[x][y]);
 		Iterator <Vector<Integer>> itr =  v.iterator();
 
-		System.out.println(this.count);
+		// System.out.println(this.count);
 
-		System.out.println("Trajectory of " + this.board.B[x][y]);
-		System.out.println("-----------------");
+		// System.out.println("Trajectory of " + this.board.B[x][y]);
+		// System.out.println("-----------------");
 
 		while(itr.hasNext())
 		{
@@ -375,17 +429,17 @@ class chess extends JFrame implements ActionListener
 
 			if(this.board.empty(i, j))
 			{
-				System.out.println("activated");
+				// System.out.println("activated");
 				this.b[i][j].activeMode();
 			}
 			else if(this.board.B[i][j].charAt(0) - p != 0)
 			{
-				System.out.println("dangerMode");
+				// System.out.println("dangerMode");
 				this.b[i][j].dangerMode();
 			}
 		}
-		System.out.println("-----------------");
-		System.out.println("Out of highlightTrajectory");
+		// System.out.println("-----------------");
+		// System.out.println("Out of highlightTrajectory");
 
 	}
 
@@ -433,9 +487,38 @@ class chess extends JFrame implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
-		System.out.println("In actionPerformed");
-		System.out.println("this.count "+this.count);
-		System.out.println("this.clicked "+ this.clicked);
+		// System.out.println("In actionPerformed");
+		// System.out.println("this.count "+this.count);
+		// System.out.println("this.clicked "+ this.clicked);
+		// if(e.getSource() == this.pw.b1)
+		// {
+		// 	pw.pieceSelected = "q";
+		// }
+		// else if(e.getSource() == this.pw.b2)
+		// {
+		// 	pw.pieceSelected = "r";
+		// }
+		// else if(e.getSource() == this.pw.b3)
+		// {
+		// 	pw.pieceSelected = "b";
+		// }
+		// else if(e.getSource() == this.pw.b4)
+		// {
+		// 	pw.pieceSelected = "n";
+		// }
+		// else if(e.getSource() == this.pw.b5)
+		// {
+		// 	// if(this.selected = false){
+		// 		this.pw.selected = true;
+		// 		System.out.println("PIECE IS "+this.pw.pieceSelected);
+		// 		System.out.println("SELECETED "+this.pw.selected);
+		// 		this.promotedPiece = this.pw.pieceSelected;
+
+		// 		this.filled = true;
+		// 		//super.setVisible(false);
+		// 	//}
+
+		// }
 		if(e.getSource()== light)
 		{
 			changeTheme(0);
@@ -448,6 +531,7 @@ class chess extends JFrame implements ActionListener
 		{
 			changeTheme(2);
 		}
+
 
 
 		if(e.getSource() == save)
@@ -531,12 +615,16 @@ class chess extends JFrame implements ActionListener
 			}
 			else{
 				resetColors();
+				try{
 				boolean result = this.play();
 				this.clicked = 0;
 				this.r = -1; this.c = -1; this.r_ = -1; this.c_ = -1;
+				}
+				catch(Exception ex)
+				{;}
 			}
 		}
-		System.out.println("Out of actionPerformed");
+		//System.out.println("Out of actionPerformed");
 		return;
 	}
 
@@ -591,7 +679,7 @@ class chess extends JFrame implements ActionListener
 		}
 		catch (IOException e)
 		{
-			System.out.println("An error occurred.");
+			//System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
 	}
@@ -686,3 +774,133 @@ class chess extends JFrame implements ActionListener
 	}
 
 }
+
+
+
+	
+class promotionWindow extends JDialog implements ActionListener
+{
+	public String piece;
+	public boolean selected;
+
+	public JRadioButton b1, b2, b3, b4;
+	public JButton b5;
+
+	public ButtonGroup g;
+
+	private chess C;
+	public promotionWindow()
+	{
+		super();
+		JPanel panel = new JPanel();
+		panel.add(new JLabel("Piece to be promoted"));
+		this.getContentPane().add(panel);
+
+		piece = "";
+		selected = false;
+	}
+
+	public promotionWindow(chess c)
+	{
+		super(c, "Promote Piece", true);
+		
+		//super.addActionListener(this);
+
+		this.C = c;
+
+		this.setSize(500, 200);
+		JPanel panel = new JPanel();
+		//panel.add(new JLabel("Piece to be promoted"));
+		panel.setLayout(new GridLayout(5, 1, 2, 2));
+
+
+		piece = "";
+		selected = false;
+
+		g = new ButtonGroup();
+
+		URL URL1 = getClass().getResource("./Imgs/white_queen.png");
+		URL URL2 = getClass().getResource("./Imgs/white_rook.png");
+		URL URL3 = getClass().getResource("./Imgs/white_bishop.png");
+		URL URL4 = getClass().getResource("./Imgs/white_knight.png");
+		
+	
+		if(this.C.count%2 == 1)
+		{
+			URL1 = getClass().getResource("./Imgs/black_queen.png");
+			URL2 = getClass().getResource("./Imgs/black_rook.png");
+			URL3 = getClass().getResource("./Imgs/black_bishop.png");
+			URL4 = getClass().getResource("./Imgs/black_knight.png");
+		}
+
+		
+		b1 = new JRadioButton("<html><body><img src='" + URL1.toString() +"'width=\"25\" height=\"25\">");
+		b2 = new JRadioButton("<html><body><img src='" + URL2.toString() +"'width=\"25\" height=\"25\">");
+		b3 = new JRadioButton("<html><body><img src='" + URL3.toString() +"'width=\"25\" height=\"25\">");
+		b4 = new JRadioButton("<html><body><img src='" + URL4.toString() +"'width=\"25\" height=\"25\">");
+		b5 = new JButton("Promote");
+
+		b1.addActionListener(this);
+		b2.addActionListener(this);
+		b3.addActionListener(this);
+		b4.addActionListener(this);
+
+		b5.addActionListener(this);
+		b5.setPreferredSize(new Dimension(40, 40));
+		b5.setBackground(new Color(0,255,0, 120));
+		
+
+		g.add(b1); g.add(b2); g.add(b3); g.add(b4);g.add(b5);
+
+
+		panel.add(b1);
+		panel.add(b2);
+		panel.add(b3);
+		panel.add(b4);
+		panel.add(b5);
+
+		this.getContentPane().add(panel);
+		this.setVisible(true);
+	}
+
+	public void actionPerformed(ActionEvent e)
+	{
+		System.out.println("In pwindow actionPerformed");
+		if(b1.isSelected())
+		{
+			this.piece = "q";
+			this.C.promotedPiece = this.piece;
+		}
+		else if(b2.isSelected())
+		{
+			this.piece = "r";
+			this.C.promotedPiece = this.piece;
+		}
+		else if(b3.isSelected())
+		{
+			this.piece = "b";
+			this.C.promotedPiece = this.piece;
+		}
+		else if(b4.isSelected())
+		{
+			this.piece = "n";
+			this.C.promotedPiece = this.piece;
+		}
+		if(e.getSource() == b5)
+		{
+			b5.setBackground(new Color(0,255,0, 250));
+			// System.out.println("In b5");
+			this.selected = true;
+			this.C.promotedPiece = this.piece;
+			dispose();
+		}
+		// if(b5.isSelected())
+		// {
+		// 	this.setVisible(false);
+		// 	dispose();
+		// }
+		// System.out.println("Piece is " + this.piece);
+
+	}
+}
+
