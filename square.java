@@ -1,3 +1,6 @@
+// Name: Luke Power
+// Name: Venkata Vadrevu
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JPanel;

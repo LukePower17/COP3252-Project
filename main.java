@@ -1,3 +1,6 @@
+// Name: Luke Power
+// Name: Venkata Vadrevu
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JPanel;
@@ -14,7 +17,7 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.*;
 import java.net.URL;
-//import java.util.concurrent.locks.ReentrantLock;
+
 
 
 public class main
@@ -113,6 +116,7 @@ class chess extends JFrame implements ActionListener
 		super.setVisible(true);
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		super.setSize(720, 720);
+		super.setResizable(false);
 
 
 		menuBar = new JMenuBar();
@@ -356,7 +360,7 @@ class chess extends JFrame implements ActionListener
 		}
 		this.count = temp;
 		this.count = (this.count%2 == 0)?this.count + 1:this.count;
-		else if(this.board.staleMate(1))
+		if(this.board.staleMate(1))
 		{
 			JOptionPane.showMessageDialog(null, "Draw Game\nSelect Create New Game to play again");
 		}
@@ -442,8 +446,6 @@ class chess extends JFrame implements ActionListener
 			int i = C.get(0);
 			int j = C.get(1);
 
-			System.out.println(i + " " + j);
-
 			char p = (this.count%2 == 0)?'w': 'b';
 
 			if(this.board.empty(i, j))
@@ -523,7 +525,6 @@ class chess extends JFrame implements ActionListener
 		{
 			saveGame();
 			setBoard();
-			this.board.display();
 			super.setVisible(false);
 			super.setVisible(true);
 			resetColors();
@@ -534,7 +535,6 @@ class chess extends JFrame implements ActionListener
 			setBoard();
 			resetColors();
 			setBoard();
-			this.board.display();
 			super.setVisible(false);
 			super.setVisible(true);
 		}
@@ -543,8 +543,6 @@ class chess extends JFrame implements ActionListener
 			loadGame();
 			setBoard();
 			super.setVisible(false);
-
-			this.board.display();
 			resetColors();
 			super.setVisible(true);
 
@@ -570,7 +568,6 @@ class chess extends JFrame implements ActionListener
 							this.r_ = i;
 							this.c_ = j;
 							this.clicked = 2;
-
 						}
 					}
 				}
@@ -675,12 +672,12 @@ class chess extends JFrame implements ActionListener
 
 			Scanner sc = new Scanner(file);
 			int turn = 0;
+			createGame();
 			this.count = 0;
 			while (sc.hasNextLine())
 			{ 
      	 		String line = sc.nextLine();
-     	 		System.out.println(line);
-     	 		System.out.println(line.length());
+     
      	 		if(line.length() == 1)
      	 		{
      	 			turn = Integer.parseInt(""+line.charAt(0));
