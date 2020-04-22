@@ -199,52 +199,42 @@ class chess extends JFrame implements ActionListener
 		int result = -4;
 		if(this.board.checkMate(0))
 		{
-			JOptionPane.showMessageDialog(null, "Black Wins!\nSelect Create New Game to play again");
+			JOptionPane.showMessageDialog(null, "Black Wins!\nSelect File -> Create New Game to play again");
 		}
 		else if(this.board.checkMate(1)){
-			JOptionPane.showMessageDialog(null, "White Wins!\nSelect Create New Game to play again");
+			JOptionPane.showMessageDialog(null, "White Wins!\nSelect File -> Create New Gameto play again");
 		}
 
 		else
 		{
 			if(this.board.staleMate(0))
 			{
-				JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
+				JOptionPane.showMessageDialog(null, "Draw game!\nSelect File -> Create New Game to play again");
 			}
 
 			else if(this.board.staleMate(1))
 			{
-				JOptionPane.showMessageDialog(null, "Draw game!\nSelect Create New Game to play again");
+				JOptionPane.showMessageDialog(null, "Draw game!\nSelect File -> Create New Game to play again");
 			}
 
 		}
 		
-
-		this.board.display();
-		
-
-		//boolean notDraworLose = !(this.board.checkMate(0) || this.board.checkMate(1) || this.board.staleMate(0) ||this.board.staleMate(1) );
-
-		//System.out.println(notDraworLose);
-		// System.out.println("count" + this.count);
-		// notDraworLose &&
 		if(isValid(this.r, this.c) && isValid(this.r_, this.c_))
 		{
-			System.out.println(this.r +" "+this.c + " "+this.r_ +" "+ this.c_);
 
 			if(this.board.isValidChessMove(this.r, this.c, this.r_, this.c_, this.count%2))
 			{
 				result = -3;
-				// need to return winner
 
+				// need to return winner
 				result = this.board.playMove(this.r, this.c, this.r_, this.c_, this.count%2);
 
-				//System.out.println("Result "+result);
-				if(result == 0 || result == -2)
+				String move = "";
+				if(result == 0 || result == -2 || result == 1)
 				{
-					String move = ""+ String.valueOf(r) + "," +  String.valueOf(c) + "," +  String.valueOf(r_) + "," + String.valueOf(c_) + "\n";
-					this.moves += move;
-					this.count += 1;
+					move = ""+ String.valueOf(r) + "," +  String.valueOf(c) + "," +  String.valueOf(r_) + "," + String.valueOf(c_);
+					
+					
 				}
 
 				if(result == 0)
@@ -262,87 +252,118 @@ class chess extends JFrame implements ActionListener
 						Vector<Integer> cor = this.board.M.get("bk");
 						b[(int)cor.get(0)][(int)cor.get(1)].dangerMode();
 					}
-					// return true;
+					move +=  "\n";
+					this.moves += move;
+					this.count += 1;
+
 				}
+				//PROMOTION
 				else if(result == 1)
 				{
-					// System.out.println("In the promotion");
+					
 					String p = (this.count%2 == 0)?"w":"b";
 					String originalPiece = this.board.B[this.r_][this.c_];
 		   			int ind = Integer.parseInt(""+this.board.B[this.r_][this.c_].charAt(2));
 
 		   			
-		   			promotionWindow pw = new promotionWindow(this);
+		   			if(promotedPiece.equals(""))
+		   			{
+			   			promotionWindow pw = new promotionWindow(this);
+			   			
+			   		}
 
-		   			// while(!filled)
-		   			// {
+			   		move = move +","+promotedPiece+ "\n";
+			   		this.moves += move;
 
-		   				
-		   				// pw.show(this.count%2);
-		   				// promotedPiece = pw.getPiece();
-		   				// System.out.println("promotedPiece " + promotedPiece);
-		   				//pw.setVisible(false);
-		   				// if(!promotedPiece.equals(""))
-		   				// {
-		   				// 	notify();
-		   					// lock.unlock();
-		   			// 	}
-		   			// 	wait();
-		   			// }
-	   				
-		   			//}
-
-		   
-
-		   			// System.out.println("promotedPiece " + promotedPiece);
 		   			this.board.M.remove(originalPiece);
+
 		   			if(this.count%2 == 0){this.board.whitePawns[ind] = -2; }
 		   			else{this.board.blackPawns[ind] = -2;}
 
-		   			//char promotedPiece = input.next().charAt(0);
+		   			
+		   			this.board.B[this.r_][this.c_] = "";
 					this.board.B[this.r_][this.c_] = p+this.promotedPiece+String.valueOf(this.count);
+					
 					Vector<Integer> coordinates = new Vector<Integer>();
 					coordinates.add(this.r_); coordinates.add(this.c_);
 
 					this.board.M.put(this.board.B[this.r_][this.c_], coordinates);
 					this.board.moved.put(this.board.B[this.r_][this.c_], false);
 
+
 					this.promotedPiece = "";
 					setBoard();
+					resetColors(this.r, this.c, this.r_, this.c_);
+					
+					this.board.M = new HashMap<String, Vector<Integer>>();
+					this.board.whiteAlive = new HashSet<String>();
+					this.board.blackAlive = new HashSet<String>();
+					for(int i = 0; i < this.board.B.length; i++)
+					{
+						for(int j = 0; j < this.board.B[0].length; j++)
+						{
+							if(!this.board.B[i][j].equals(""))
+							{
+								Vector<Integer> v = new Vector<Integer>();
+								v.add(i); v.add(j);
+								this.board.M.put(this.board.B[i][j], v);
+								if(this.board.B[i][j].charAt(0) - 'w' == 0)
+								{
+									this.board.whiteAlive.add(this.board.B[i][j]);
+								}
+								else
+								{
+									this.board.blackAlive.add(this.board.B[i][j]);
+								}
+							}
+						}
+					}
+					
+					setBoard();
 					this.count += 1;
-					// super.setVisible(false);
-		   // 			super.setVisible(true);
+
+		   			if(this.board.Check(0))
+					{
+						Vector<Integer> cor = this.board.M.get("wk");
+						b[(int)cor.get(0)][(int)cor.get(1)].dangerMode();
+					}
+					else if(this.board.Check(1))
+					{
+						Vector<Integer> cor = this.board.M.get("bk");
+						b[(int)cor.get(0)][(int)cor.get(1)].dangerMode();
+					}
 				}
 
 			}
 
 		}
 
-		//System.out.println(this.board.checkMate(0) +" "+this.board.checkMate(1) + this.board.staleMate(0) +" "+this.board.staleMate(1));
+		
 
 		if(this.board.checkMate(0))
 		{
-			System.out.println("Black Wins");
 			JOptionPane.showMessageDialog(null, "Black Wins!\nSelect Create New Game to play again");
 		}
 		else if(this.board.checkMate(1)){
 			JOptionPane.showMessageDialog(null, "White Wins!\nSelect Create New Game to play again");
 		}
-
-
+		int temp = this.count;
+		
+		this.count = (this.count%2 == 0)?this.count:this.count + 1;
 		if(this.board.staleMate(0))
 		{
 			JOptionPane.showMessageDialog(null, "Draw Game\nSelect Create New Game to play again");
 		}
-
+		this.count = temp;
+		this.count = (this.count%2 == 0)?this.count + 1:this.count;
 		else if(this.board.staleMate(1))
 		{
 			JOptionPane.showMessageDialog(null, "Draw Game\nSelect Create New Game to play again");
 		}
-
+		
+		this.count = temp;
 		if(result == 0 || result == -2 || result == 1)
 			return true;
-		// System.out.println("Out of play");
 		return false;
 
 
@@ -352,17 +373,18 @@ class chess extends JFrame implements ActionListener
 	public void setBoard()
 	{
 
-		// System.out.println("In setBoard");
-		for(int i = 0; i < 8; i++)//i is rows
+		//i is rows j is for cols
+		for(int i = 0; i < 8; i++)
 		{
 			for(int j = 0; j < 8; j++)
 			{
-				if(board.B[i][j].equals(""))	//empty spot
+				//empty spot
+				if(board.B[i][j].equals(""))	
 				{
 					b[i][j].setIcon(null);
 				}
-
-				else if(board.B[i][j].charAt(0) - 'w' == 0)	//white
+				//white
+				else if(board.B[i][j].charAt(0) - 'w' == 0)	
 				{
 						if(board.B[i][j].charAt(1) - 'p' == 0)
 							b[i][j].setIcon(WPawn);
@@ -394,14 +416,14 @@ class chess extends JFrame implements ActionListener
 				}
 			}
 		}
-		// System.out.println("Out of setBoard");
+		
 		return;
 
 	}
 
 	public void highlightTrajectory(int x, int y)
 	{
-		// System.out.println("In highlight trajectory");
+		
 		char player = (this.count%2 == 0)?'w':'b';
 
 		if(!(this.board.B[x][y].equals("") == false && this.board.B[x][y].charAt(0) - player == 0))
@@ -412,10 +434,7 @@ class chess extends JFrame implements ActionListener
 		Vector<Vector<Integer>> v = this.board.getTrajectory(this.board.B[x][y]);
 		Iterator <Vector<Integer>> itr =  v.iterator();
 
-		// System.out.println(this.count);
-
-		// System.out.println("Trajectory of " + this.board.B[x][y]);
-		// System.out.println("-----------------");
+		
 
 		while(itr.hasNext())
 		{
@@ -429,17 +448,16 @@ class chess extends JFrame implements ActionListener
 
 			if(this.board.empty(i, j))
 			{
-				// System.out.println("activated");
+				
 				this.b[i][j].activeMode();
 			}
 			else if(this.board.B[i][j].charAt(0) - p != 0)
 			{
-				// System.out.println("dangerMode");
+				
 				this.b[i][j].dangerMode();
 			}
 		}
-		// System.out.println("-----------------");
-		// System.out.println("Out of highlightTrajectory");
+		
 
 	}
 
@@ -487,52 +505,19 @@ class chess extends JFrame implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
-		// System.out.println("In actionPerformed");
-		// System.out.println("this.count "+this.count);
-		// System.out.println("this.clicked "+ this.clicked);
-		// if(e.getSource() == this.pw.b1)
-		// {
-		// 	pw.pieceSelected = "q";
-		// }
-		// else if(e.getSource() == this.pw.b2)
-		// {
-		// 	pw.pieceSelected = "r";
-		// }
-		// else if(e.getSource() == this.pw.b3)
-		// {
-		// 	pw.pieceSelected = "b";
-		// }
-		// else if(e.getSource() == this.pw.b4)
-		// {
-		// 	pw.pieceSelected = "n";
-		// }
-		// else if(e.getSource() == this.pw.b5)
-		// {
-		// 	// if(this.selected = false){
-		// 		this.pw.selected = true;
-		// 		System.out.println("PIECE IS "+this.pw.pieceSelected);
-		// 		System.out.println("SELECETED "+this.pw.selected);
-		// 		this.promotedPiece = this.pw.pieceSelected;
-
-		// 		this.filled = true;
-		// 		//super.setVisible(false);
-		// 	//}
-
-		// }
-		if(e.getSource()== light)
+		
+		if(e.getSource() == light)
 		{
 			changeTheme(0);
 		}
-		if(e.getSource()== dark)
+		if(e.getSource() == dark)
 		{
 			changeTheme(1);
 		}
-		if(e.getSource()== blue)
+		if(e.getSource() == blue)
 		{
 			changeTheme(2);
 		}
-
-
 
 		if(e.getSource() == save)
 		{
@@ -570,7 +555,6 @@ class chess extends JFrame implements ActionListener
 			{
 				for(int j = 0; j < b[0].length; j++)
 				{
-
 					if(e.getSource() == b[i][j])
 					{
 						if(this.clicked == 0)
@@ -624,14 +608,12 @@ class chess extends JFrame implements ActionListener
 				{;}
 			}
 		}
-		//System.out.println("Out of actionPerformed");
 		return;
 	}
 
 
 	public void resetColors()
 	{
-
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				this.b[i][j].normalMode();
@@ -643,7 +625,6 @@ class chess extends JFrame implements ActionListener
 
 	public void resetColors(int r, int c, int r_, int c_)
 	{
-
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if((i == r && j == c)||(i == r_ && j == c_))
@@ -656,7 +637,6 @@ class chess extends JFrame implements ActionListener
 				}
 			}
 		}
-
 	}
 
 	public void saveGame()
@@ -670,16 +650,15 @@ class chess extends JFrame implements ActionListener
 
 		try
 		{
-				FileWriter myWriter = new FileWriter(saveName);
-				myWriter.write(String.valueOf((count + 1)%2) + "\n");
-				myWriter.write(this.moves);
-				myWriter.close();
+			FileWriter myWriter = new FileWriter(saveName);
+			myWriter.write(String.valueOf((this.count + 1)%2) + "\n");
+			myWriter.write(this.moves);
+			myWriter.close();
 
-				System.out.println(this.moves);
+			
 		}
 		catch (IOException e)
 		{
-			//System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
 	}
@@ -689,74 +668,47 @@ class chess extends JFrame implements ActionListener
 	{
 		try
 		{
-
-
 			FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
 			dialog.setMode(FileDialog.LOAD);
 			dialog.setVisible(true);
 			File file = new File( dialog.getFile() );
 
-			FileReader fr = new FileReader(file);
-
-			String piece = "";
-			int C;
-			int row = 0;
-			int column = 0;
-			int turn;
-			this.board = new Board();
-			// turn
-			C = fr.read();
-			turn = Integer.parseInt("" + (char)C);
-
+			Scanner sc = new Scanner(file);
+			int turn = 0;
 			this.count = 0;
-			int r, c, r_, c_;
+			while (sc.hasNextLine())
+			{ 
+     	 		String line = sc.nextLine();
+     	 		System.out.println(line);
+     	 		System.out.println(line.length());
+     	 		if(line.length() == 1)
+     	 		{
+     	 			turn = Integer.parseInt(""+line.charAt(0));
+     	 		}
+     	 		if(line.length() == 7)
+     	 		{
+     	 			this.r = Integer.parseInt(""+line.charAt(0));
+     	 			this.c = Integer.parseInt(""+line.charAt(2));
+     	 			this.r_ = Integer.parseInt(""+line.charAt(4));
+     	 			this.c_ = Integer.parseInt(""+line.charAt(6));
 
-			r = -1; c = -1; r_= -1; c_ = -1;
-
-			this.board = new Board();
-			while ((C = fr.read()) != -1){
-				System.out.println("-> "+r+" "+c+" "+r_+" " +c_);
-				System.out.println((char)C);
-				if((char)C - '\n' == 0)
-				{
-					C = fr.read();
-					if(r == -1)
-					{
-						r = Integer.parseInt("" + (char)C) ;
-					}
-				}
-				else if((char)C - ',' == 0)
-				{
-
-
-					if(c == -1)
-					{
-						C = fr.read();
-						c = Integer.parseInt(""+(char)C);
-					}
-					else if(r_ == -1)
-					{
-						C = fr.read();
-						r_ = Integer.parseInt(""+(char)C);
-					}
-					else if(c_ == -1)
-					{
-						C = fr.read();
-						c_ = Integer.parseInt(""+(char)C);
-					}
-				}
-
-				if(!(r == -1 || r_ == -1 || c== -1 || c_ == -1))
-				{
-
-					this.r = r;
-					this.c = c;
-					this.r_ = r_;
-					this.c_ = c_;
-					play();
-					r = -1; c = -1; r_ = -1; c_ = -1;
-				}
-			}
+     	 			play();
+     	 			
+     	 			this.promotedPiece = "";
+     	 		}
+     	 		else if(line.length() == 9)
+     	 		{
+     	 			this.r = Integer.parseInt(""+line.charAt(0));
+     	 			this.c = Integer.parseInt(""+line.charAt(2));
+     	 			this.r_ = Integer.parseInt(""+line.charAt(4));
+     	 			this.c_ = Integer.parseInt(""+line.charAt(6));
+     	 			this.promotedPiece = "" + line.charAt(8);
+     	 			play();
+   
+     	 			this.promotedPiece = "";
+     	 		}
+  			} 
+ 			
 		}
 		catch(Exception ex)
 		{
@@ -793,7 +745,6 @@ class promotionWindow extends JDialog implements ActionListener
 	{
 		super();
 		JPanel panel = new JPanel();
-		panel.add(new JLabel("Piece to be promoted"));
 		this.getContentPane().add(panel);
 
 		piece = "";
@@ -803,14 +754,13 @@ class promotionWindow extends JDialog implements ActionListener
 	public promotionWindow(chess c)
 	{
 		super(c, "Promote Piece", true);
-		
-		//super.addActionListener(this);
 
 		this.C = c;
 
+
 		this.setSize(500, 200);
 		JPanel panel = new JPanel();
-		//panel.add(new JLabel("Piece to be promoted"));
+		
 		panel.setLayout(new GridLayout(5, 1, 2, 2));
 
 
@@ -832,6 +782,7 @@ class promotionWindow extends JDialog implements ActionListener
 			URL3 = getClass().getResource("./Imgs/black_bishop.png");
 			URL4 = getClass().getResource("./Imgs/black_knight.png");
 		}
+	
 
 		
 		b1 = new JRadioButton("<html><body><img src='" + URL1.toString() +"'width=\"25\" height=\"25\">");
@@ -865,7 +816,7 @@ class promotionWindow extends JDialog implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
-		System.out.println("In pwindow actionPerformed");
+	
 		if(b1.isSelected())
 		{
 			this.piece = "q";
@@ -889,18 +840,12 @@ class promotionWindow extends JDialog implements ActionListener
 		if(e.getSource() == b5)
 		{
 			b5.setBackground(new Color(0,255,0, 250));
-			// System.out.println("In b5");
+			
 			this.selected = true;
+			b5.setBackground(new Color(0,255,0, 120));
 			this.C.promotedPiece = this.piece;
 			dispose();
 		}
-		// if(b5.isSelected())
-		// {
-		// 	this.setVisible(false);
-		// 	dispose();
-		// }
-		// System.out.println("Piece is " + this.piece);
-
 	}
 }
 
