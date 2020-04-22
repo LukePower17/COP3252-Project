@@ -1207,6 +1207,7 @@ class Board{
 				rook = "br1";
 			}
 		}
+
 		int limit = 3;
 		int sign = -1;
 		if(left != 0)
@@ -1216,8 +1217,9 @@ class Board{
 		}
 		boolean kingMoved = moved.get(king);
 		boolean rookMoved = moved.get(rook);
+		boolean rookAlive = (player == 0)? whiteAlive.contains(rook): blackAlive.contains(rook);
 
-		if(!kingMoved && !rookMoved)
+		if(!kingMoved && !rookMoved && rookAlive)
 		{
 			Vector<Integer> cor = M.get(king);
 			int x = (int)cor.get(0);
