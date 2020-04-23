@@ -26,6 +26,7 @@ public class main
 	{
 		chess C = new chess();
 		C.setBoard();
+		
 	}
 }
 
@@ -765,28 +766,36 @@ class promotionWindow extends JDialog implements ActionListener
 		selected = false;
 
 		g = new ButtonGroup();
-
-		URL URL1 = getClass().getResource("./Imgs/white_queen.png");
-		URL URL2 = getClass().getResource("./Imgs/white_rook.png");
-		URL URL3 = getClass().getResource("./Imgs/white_bishop.png");
-		URL URL4 = getClass().getResource("./Imgs/white_knight.png");
-		
+// getClass().getResourceAsStream("file.txt")
+		URL URL1 = getClass().getClassLoader().getResource("./Imgs/white_queen.png");
+		URL URL2 = getClass().getClassLoader().getResource("./Imgs/white_rook.png");
+		URL URL3 = getClass().getClassLoader().getResource("./Imgs/white_bishop.png");
+		URL URL4 = getClass().getClassLoader().getResource("./Imgs/white_knight.png");
 	
 		if(this.C.count%2 == 1)
 		{
-			URL1 = getClass().getResource("./Imgs/black_queen.png");
-			URL2 = getClass().getResource("./Imgs/black_rook.png");
-			URL3 = getClass().getResource("./Imgs/black_bishop.png");
-			URL4 = getClass().getResource("./Imgs/black_knight.png");
+			URL1 = getClass().getClassLoader().getResource("./Imgs/black_queen.png");
+			URL2 = getClass().getClassLoader().getResource("./Imgs/black_rook.png");
+			URL3 = getClass().getClassLoader().getResource("./Imgs/black_bishop.png");
+			URL4 = getClass().getClassLoader().getResource("./Imgs/black_knight.png");
 		}
-	
 
-		
-		b1 = new JRadioButton("<html><body><img src='" + URL1.toString() +"'width=\"25\" height=\"25\">");
-		b2 = new JRadioButton("<html><body><img src='" + URL2.toString() +"'width=\"25\" height=\"25\">");
-		b3 = new JRadioButton("<html><body><img src='" + URL3.toString() +"'width=\"25\" height=\"25\">");
-		b4 = new JRadioButton("<html><body><img src='" + URL4.toString() +"'width=\"25\" height=\"25\">");
-		b5 = new JButton("Promote");
+		if(URL1 == null || URL2 == null || URL3 == null || URL4 == null)
+		{
+			  b1 = new JRadioButton("Queen");
+			  b2 = new JRadioButton("Rook");
+			  b3 = new JRadioButton("Bishop");
+			  b4 = new JRadioButton("Knight");
+		}
+		else
+		{
+			b1 = new JRadioButton("<html><body><img src='" + URL1.toString() +"'width=\"25\" height=\"25\">");
+			b2 = new JRadioButton("<html><body><img src='" + URL2.toString() +"'width=\"25\" height=\"25\">");
+			b3 = new JRadioButton("<html><body><img src='" + URL3.toString() +"'width=\"25\" height=\"25\">");
+			b4 = new JRadioButton("<html><body><img src='" + URL4.toString() +"'width=\"25\" height=\"25\">");
+		}
+
+		b5 = new JButton("Click me to Promote");
 
 		b1.addActionListener(this);
 		b2.addActionListener(this);
